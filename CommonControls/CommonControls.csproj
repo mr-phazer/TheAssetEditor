@@ -358,13 +358,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Monogame.WpfInterop\Monogame.WpfInterop.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="AssimpNet">
-      <HintPath>..\..\..\..\Users\45311\.nuget\packages\assimpnet\4.1.0\lib\net35\AssimpNet.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <Compile Update="Editors\AnimMeta\View\MetaEntriesListView.xaml.cs">
       <SubType>Code</SubType>
