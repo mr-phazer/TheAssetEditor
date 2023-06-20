@@ -12,8 +12,6 @@ using System.Linq;
 
 namespace CommonControls.ModelImportExport
 {
-
-
     public class AssimpExporter
     {
         ILogger _logger = Serilog.Log.ForContext<AssimpExporter>();
@@ -68,7 +66,7 @@ namespace CommonControls.ModelImportExport
         private Assimp.Mesh Rmv2MeshToAsimpMesh(RmvMesh rmv2Mesh)
         {
             var assimpMesh = new Assimp.Mesh(PrimitiveType.Triangle);
-            AllocateVertices(assimpMesh, rmv2Mesh.VertexList.Length);
+            //AllocateVertices(assimpMesh, rmv2Mesh.VertexList.Length);
 
             for (int vertexIndex = 0; vertexIndex < rmv2Mesh.VertexList.Length ; vertexIndex++) // one triangle
                 RMv2PackedVertexToAssimpVertex(rmv2Mesh.VertexList[vertexIndex], assimpMesh, vertexIndex);                          
@@ -179,6 +177,17 @@ namespace CommonControls.ModelImportExport
             destMesh.Vertices[vertexIndex] = new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z);
             destMesh.Normals[vertexIndex] = new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z);
             destMesh.TextureCoordinateChannels[0][vertexIndex] = new Assimp.Vector3D(v.Uv.X, v.Uv.Y, 0);
+            destMesh.Tangents[vertexIndex] = new Assimp.Vector3D(v.Tangent.X, v.Tangent.Y, v.Tangent.Z);
+            destMesh.BiTangents[vertexIndex] = new Assimp.Vector3D(v.BiNormal.X, v.BiNormal.Y, v.BiNormal.Z);
+        }
+        private void AddRMv2PackedVertexToAssimpVertex(
+            CommonVertex v,
+            Assimp.Mesh destMesh,
+            int vertexIndex)
+        {
+            destMesh.Vertices.Add(new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z));
+            destMesh.Normals.Add(new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z));
+            destMesh.TextureCoordinateChannels[0][vertexIndex].Add(Assimp.Vector3D(v.Uv.X, v.Uv.Y, 0));
             destMesh.Tangents[vertexIndex] = new Assimp.Vector3D(v.Tangent.X, v.Tangent.Y, v.Tangent.Z);
             destMesh.BiTangents[vertexIndex] = new Assimp.Vector3D(v.BiNormal.X, v.BiNormal.Y, v.BiNormal.Z);
         }
