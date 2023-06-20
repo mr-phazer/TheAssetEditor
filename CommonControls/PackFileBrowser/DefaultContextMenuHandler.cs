@@ -1,6 +1,7 @@
 ﻿using CommonControls.Common;
 using CommonControls.Services;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace CommonControls.PackFileBrowser
 {
@@ -45,8 +46,8 @@ namespace CommonControls.PackFileBrowser
                     Additem(ContextItems.CreateFolder, createMenu);
 
                     AddSeperator(newContextMenu);
-                    var importSubMenu = Additem(ContextItems.Import, newContextMenu);                    
-                    Additem(ContextItems.Import3DModel, importSubMenu);                  
+                    var importSubMenu = Additem(ContextItems.Import, newContextMenu);
+                    Additem(ContextItems.Import3DModel, importSubMenu);
                     AddSeperator(newContextMenu);
 
                     Additem(ContextItems.Expand, newContextMenu);
@@ -103,11 +104,20 @@ namespace CommonControls.PackFileBrowser
                 Additem(ContextItems.CopyFullPath, newContextMenu);
                 Additem(ContextItems.Export, newContextMenu);
                 AddSeperator(newContextMenu);
+                if (Path.GetExtension(node.GetFullPath()).ToLower() == ".rigid_model_v2")
+                {
+                    Additem(ContextItems.ExportWithAssimp, newContextMenu);
+                    AddSeperator(newContextMenu);
+                }
+
 
                 var openFolder = Additem(ContextItems.Open, newContextMenu);
                 Additem(ContextItems.OpenWithHxD, openFolder);
                 Additem(ContextItems.OpenWithNodePadPluss, openFolder);
+
             }
+
+
 
             Items = newContextMenu;
         }

@@ -32,6 +32,7 @@ namespace CommonControls.PackFileBrowser
         public ICommand AddFilesFromDirectory { get; set; }
         public ICommand AddFilesCommand { get; set; }
         public ICommand Import3DFileCommand { get; set; }
+        public ICommand ExportWithAssimCommand { get; set; }
         public ICommand CloseNodeCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand SavePackFileCommand { get; set; }
@@ -63,6 +64,7 @@ namespace CommonControls.PackFileBrowser
             RenameNodeCommand = new RelayCommand(OnRenameNode);
             AddFilesCommand = new RelayCommand(OnAddFilesCommand);
             Import3DFileCommand = new RelayCommand(OnImport3DModelCommand);
+            ExportWithAssimCommand = new RelayCommand(OnExportWithAssimpCommand);
             AddFilesFromDirectory = new RelayCommand(OnAddFilesFromDirectory);
             DuplicateCommand = new RelayCommand(DuplicateNode);
             CreateFolderCommand = new RelayCommand(CreateFolder);
@@ -141,9 +143,48 @@ namespace CommonControls.PackFileBrowser
                 }
             }
         }
-        void OnImport3DModelCommand()
+
+        void OnExportWithAssimpCommand()
         {
+            //if (_selectedNode.FileOwner.IsCaPackFile)
+            //{
+            //    MessageBox.Show("Unable to edit CA packfile");
+            //    return;
+            //}
+
             var parentPath = _selectedNode.GetFullPath(); // get pack path, at mouse pointer        
+            var dialogBox = new SaveFileDialog();
+            dialogBox.Filter = AssimpUtil.GetDialogFilterStringSupportedFormats();
+            // TODO: chack back when done
+            //if (dialogBox.ShowDialog() == true && dialogBox.FileNames.Any())
+            {
+                // TODO: chack back when done
+                var outPath = ""; // dialogBox.FileNames[0];
+                //try
+                //{
+                    var assimpExporter = new AssimpExporter();
+
+                    var packFie = _packFileService.FindFile(parentPath);
+                    byte[] rmv2RawBuffer =packFie.DataSource.ReadData();
+                    var factory = ModelFactory.Create();
+                    var rmv2File = factory.Load(rmv2RawBuffer);
+
+                    assimpExporter.ExportModelFile(rmv2File, outPath);
+
+                //}
+                //catch (Exception e)
+                //{
+                //    MessageBox.Show($"Failed to import model file {outPath}. Error : {e.Message}", "Error");
+                //    _logger.Here().Error($"Failed to load file {outPath}. Error : {e}");
+                //}
+
+            }
+
+
+        }
+
+        void OnImport3DModelCommand()        
+        {       
 
             if (_selectedNode.FileOwner.IsCaPackFile)
             {
@@ -151,18 +192,17 @@ namespace CommonControls.PackFileBrowser
                 return;
             }
 
-            var dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = false;
-            dialog.Multiselect = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            {
-                //var parentPath = _selectedNode.GetFullPath();
+            var parentPath = _selectedNode.GetFullPath(); // get pack path, at mouse pointer        
+            var dialog = new OpenFileDialog();
+            dialog.Filter = AssimpUtil.GetDialogFilterStringSupportedFormats();
+            if (dialog.ShowDialog() == true)
+            {                
                 var files = dialog.FileNames;
                 foreach (var file in files)
                 {                    
                     try
                     {
-                        PackFileUtil.ImportAssimpDiskFileToPack(_packFileService, _selectedNode.FileOwner, parentPath, file);                                                 
+                        AssimpUtil.ImportAssimpDiskFileToPack(_packFileService, _selectedNode.FileOwner, parentPath, file);                                                 
                     }
                     catch (Exception e)
                     {
@@ -446,6 +486,8 @@ namespace CommonControls.PackFileBrowser
                 return new ContextMenuItem() { Name = "Import" };
                 case ContextItems.Import3DModel:
                 return new ContextMenuItem() { Name = "Import 3D Model", Command = Import3DFileCommand };
+                case ContextItems.ExportWithAssimp:
+                return new ContextMenuItem() { Name = "Export With Assimp", Command = ExportWithAssimCommand };
                 case ContextItems.Create:
                 return new ContextMenuItem() { Name = "Create" };
                 case ContextItems.AddFiles:
@@ -495,6 +537,7 @@ namespace CommonControls.PackFileBrowser
             Import,
             AddFiles,            
             Import3DModel,
+            ExportWithAssimp, 
             AddDirectory,
             CopyToEditablePack,
             Duplicate,

@@ -15,6 +15,8 @@ using CommonControls.FileTypes.PackFiles.Models;
 using CommonControls.Services;
 using Serilog;
 using CommonControls.Common;
+using Assimp.Unmanaged;
+
 
 namespace CommonControls.ModelImportExport
 {    public class AssimpImporter
@@ -29,6 +31,15 @@ namespace CommonControls.ModelImportExport
         {
             _packFileService = packFileService;
         }
+
+        public string[] GetSupportedFormatExtendtions()
+        {
+            var unmangedLibrary = Assimp.Unmanaged.AssimpLibrary.Instance;
+            var supportExtenstionList = unmangedLibrary.GetExtensionList();
+
+            return supportExtenstionList;
+        }
+
         public void ImportScene(string fileName)
         {
             ImportAssimpScene(fileName);
