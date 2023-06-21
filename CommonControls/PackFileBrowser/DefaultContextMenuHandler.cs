@@ -104,12 +104,12 @@ namespace CommonControls.PackFileBrowser
                 Additem(ContextItems.CopyFullPath, newContextMenu);
                 Additem(ContextItems.Export, newContextMenu);
                 AddSeperator(newContextMenu);
+
                 if (Path.GetExtension(node.GetFullPath()).ToLower() == ".rigid_model_v2")
                 {
                     Additem(ContextItems.ExportWithAssimp, newContextMenu);
                     AddSeperator(newContextMenu);
                 }
-
 
                 var openFolder = Additem(ContextItems.Open, newContextMenu);
                 Additem(ContextItems.OpenWithHxD, openFolder);

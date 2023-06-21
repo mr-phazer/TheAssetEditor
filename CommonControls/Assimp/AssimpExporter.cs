@@ -187,9 +187,9 @@ namespace CommonControls.ModelImportExport
         {
             destMesh.Vertices.Add(new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z));
             destMesh.Normals.Add(new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z));
-            destMesh.TextureCoordinateChannels[0][vertexIndex].Add(Assimp.Vector3D(v.Uv.X, v.Uv.Y, 0));
-            destMesh.Tangents[vertexIndex] = new Assimp.Vector3D(v.Tangent.X, v.Tangent.Y, v.Tangent.Z);
-            destMesh.BiTangents[vertexIndex] = new Assimp.Vector3D(v.BiNormal.X, v.BiNormal.Y, v.BiNormal.Z);
+            destMesh.TextureCoordinateChannels[0].Add(new Assimp.Vector3D(v.Uv.X, v.Uv.Y, 0));
+            destMesh.Tangents.Add(new Vector3D(v.Tangent.X, v.Tangent.Y, v.Tangent.Z));
+            destMesh.BiTangents.Add(new Assimp.Vector3D(v.BiNormal.X, v.BiNormal.Y, v.BiNormal.Z));
         }
 
 
