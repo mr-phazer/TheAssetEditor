@@ -17,7 +17,6 @@ using Serilog;
 using CommonControls.Common;
 using Assimp.Unmanaged;
 
-
 namespace CommonControls.ModelImportExport
 {
     public class AssimpImporter
@@ -33,18 +32,11 @@ namespace CommonControls.ModelImportExport
             _packFileService = packFileService;
         }
 
-        public string[] GetSupportedFormatExtendtions()
-        {
-            var unmangedLibrary = Assimp.Unmanaged.AssimpLibrary.Instance;
-            var supportExtenstionList = unmangedLibrary.GetExtensionList();
-
-            return supportExtenstionList;
-        }
-
         public void ImportScene(string fileName)
         {
             ImportAssimpScene(fileName);
         }
+
         private string GetSkeletonName()
         {
             string tempSkeletonString = "";
@@ -60,11 +52,11 @@ namespace CommonControls.ModelImportExport
         {
             foreach (var node in parent.Children)
             {
-                if (node.Name.Contains("skeleton"))                
+                if (node.Name.Contains("skeleton"))
                     skeletonString = node.Name.Replace("skeleton//", "");
-                
-                if (skeletonString.Length > 0)                
-                    return;             
+
+                if (skeletonString.Length > 0)
+                    return;
 
                 SearchNodesRecursiveLocal(node, ref skeletonString);
             }
@@ -78,13 +70,13 @@ namespace CommonControls.ModelImportExport
             var fullPath = $"{skeletonFolder}{skeletonId}.{animExt}";
 
             var packFileSkeleton = _packFileService.FindFile(fullPath);
-                        
+
             if (packFileSkeleton == null)
             {
                 _logger.Here().Warning($"Failed to Find skeleton '{fullPath}', it doesn't exist.");
                 MessageBox.Show($"Couldn't find skeleton '{fullPath}' \rMake sure to Load All CA Packs before importing Rigged Models!\rOr add the appropiate skeleton to your project\r\rFile Will be imported as a non-rigged model.", "Skeleton Missing Warning");
                 return;
-            }            
+            }
 
             var rawByteDataSkeleton = packFileSkeleton.DataSource.ReadData();
             _skeletonFile = AnimationFile.Create(new ByteChunk(rawByteDataSkeleton));
@@ -121,7 +113,7 @@ namespace CommonControls.ModelImportExport
 
             for (int lodIndex = 0; lodIndex < lodCount; lodIndex++)
             {
-                outputFile.ModelList[lodIndex] = new RmvModel[_assScene.MeshCount]; 
+                outputFile.ModelList[lodIndex] = new RmvModel[_assScene.MeshCount];
 
                 for (int meshIndex = 0; meshIndex < _assScene.MeshCount; meshIndex++)
                 {
@@ -305,13 +297,11 @@ namespace CommonControls.ModelImportExport
             };
 
             var numWeight = 0;
-            if (_skeletonFile != null)
-            {
-                numWeight = 4;
-            }
+            if (_skeletonFile != null)            
+                numWeight = 4;            
 
             vertex.BoneIndex = new byte[numWeight];
-            vertex.BoneWeight = new float[numWeight];            
+            vertex.BoneWeight = new float[numWeight];
 
             return vertex;
         }
