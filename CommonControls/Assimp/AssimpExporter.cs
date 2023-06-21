@@ -40,7 +40,6 @@ namespace CommonControls.ModelImportExport
             using (var importer = new AssimpContext())
             {
                 importer.ExportFile(_asssimpScene, @"C:\temp\as_tester.fbx", "fbx");
-
             }
         }
 
@@ -66,7 +65,7 @@ namespace CommonControls.ModelImportExport
         private Assimp.Mesh Rmv2MeshToAsimpMesh(RmvMesh rmv2Mesh)
         {
             var assimpMesh = new Assimp.Mesh(PrimitiveType.Triangle);
-            //AllocateVertices(assimpMesh, rmv2Mesh.VertexList.Length);
+            AllocateVertices(assimpMesh, rmv2Mesh.VertexList.Length);
 
             for (int vertexIndex = 0; vertexIndex < rmv2Mesh.VertexList.Length ; vertexIndex++) // one triangle
                 RMv2PackedVertexToAssimpVertex(rmv2Mesh.VertexList[vertexIndex], assimpMesh, vertexIndex);                          

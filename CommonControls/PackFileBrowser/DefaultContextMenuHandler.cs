@@ -114,10 +114,7 @@ namespace CommonControls.PackFileBrowser
                 var openFolder = Additem(ContextItems.Open, newContextMenu);
                 Additem(ContextItems.OpenWithHxD, openFolder);
                 Additem(ContextItems.OpenWithNodePadPluss, openFolder);
-
             }
-
-
 
             Items = newContextMenu;
         }

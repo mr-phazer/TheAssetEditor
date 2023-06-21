@@ -19,6 +19,9 @@ namespace CommonControls.ModelImportExport
         {
             _packfileService = pfs;
         }
+
+        private AssimpDiskService() { }
+
         public void ImportAssimpDiskFileToPack(PackFileContainer container, string parentPackPath, string filePath)
         {
             var fileNameNoExt = Path.GetFileNameWithoutExtension(filePath);
