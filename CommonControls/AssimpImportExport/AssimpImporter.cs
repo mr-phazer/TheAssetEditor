@@ -8,6 +8,7 @@ using CommonControls.FileTypes.RigidModel.MaterialHeaders;
 using CommonControls.FileTypes.RigidModel;
 using CommonControls.FileTypes.RigidModel.Vertex;
 using Assimp;
+using Assimp.Configs;
 using CommonControls.FileTypes.Animation;
 using System.Windows.Forms;
 using Filetypes.ByteParsing;
@@ -16,14 +17,18 @@ using CommonControls.Services;
 using Serilog;
 using CommonControls.Common;
 using Assimp.Unmanaged;
+using UkooLabs.FbxSharpie;
+using fbxsdk = UkooLabs.FbxSharpie;
 
-namespace CommonControls.ModelImportExport
+
+namespace CommonControls.AssimpImportExport
 {
+    
     public class AssimpImporter
-    {
+    {        
         ILogger _logger = Serilog.Log.ForContext<AssimpImporter>();
 
-        private Assimp.Scene _assScene;
+        private Assimp.Scene _assimpScene;
         private AnimationFile _skeletonFile;
         private PackFileService _packFileService;
 
@@ -35,51 +40,6 @@ namespace CommonControls.ModelImportExport
         public void ImportScene(string fileName)
         {
             ImportAssimpScene(fileName);
-        }
-
-        private string GetSkeletonName()
-        {
-            string tempSkeletonString = "";
-
-            var parent = _assScene.RootNode;
-
-            SearchNodesRecursiveLocal(parent, ref tempSkeletonString);
-
-            return tempSkeletonString;
-        }
-
-        void SearchNodesRecursiveLocal(Node parent, ref string skeletonString)
-        {
-            foreach (var node in parent.Children)
-            {
-                if (node.Name.Contains("skeleton"))
-                    skeletonString = node.Name.Replace("skeleton//", "");
-
-                if (skeletonString.Length > 0)
-                    return;
-
-                SearchNodesRecursiveLocal(node, ref skeletonString);
-            }
-        }
-
-        private void LoadSkeletonFile()
-        {
-            var skeletonId = GetSkeletonName();
-            var skeletonFolder = @"animations\skeletons\";
-            var animExt = "anim";
-            var fullPath = $"{skeletonFolder}{skeletonId}.{animExt}";
-
-            var packFileSkeleton = _packFileService.FindFile(fullPath);
-
-            if (packFileSkeleton == null)
-            {
-                _logger.Here().Warning($"Failed to Find skeleton '{fullPath}', it doesn't exist.");
-                MessageBox.Show($"Couldn't find skeleton '{fullPath}' \rMake sure to Load All CA Packs before importing Rigged Models!\rOr add the appropiate skeleton to your project\r\rFile Will be imported as a non-rigged model.", "Skeleton Missing Warning");
-                return;
-            }
-
-            var rawByteDataSkeleton = packFileSkeleton.DataSource.ReadData();
-            _skeletonFile = AnimationFile.Create(new ByteChunk(rawByteDataSkeleton));
         }
 
         public RmvFile MakeRMV2File()
@@ -103,7 +63,7 @@ namespace CommonControls.ModelImportExport
                 outputFile.LodHeaders[i] =
                     new Rmv2LodHeader_V6()
                     {
-                        MeshCount = (uint)_assScene.MeshCount,
+                        MeshCount = (uint)_assimpScene.MeshCount,
                         QualityLvl = 0,
                         LodCameraDistance = 0,
                     };
@@ -113,9 +73,9 @@ namespace CommonControls.ModelImportExport
 
             for (int lodIndex = 0; lodIndex < lodCount; lodIndex++)
             {
-                outputFile.ModelList[lodIndex] = new RmvModel[_assScene.MeshCount];
+                outputFile.ModelList[lodIndex] = new RmvModel[_assimpScene.MeshCount];
 
-                for (int meshIndex = 0; meshIndex < _assScene.MeshCount; meshIndex++)
+                for (int meshIndex = 0; meshIndex < _assimpScene.MeshCount; meshIndex++)
                 {
                     outputFile.ModelList[lodIndex][meshIndex] = new RmvModel();
                     ref var cuurentMeshRef = ref outputFile.ModelList[lodIndex][meshIndex];
@@ -127,9 +87,9 @@ namespace CommonControls.ModelImportExport
                         (_skeletonFile != null) ? ModelMaterialEnum.weighted : ModelMaterialEnum.default_type,
                         (_skeletonFile != null) ? FileTypes.RigidModel.VertexFormat.Cinematic : FileTypes.RigidModel.VertexFormat.Static);
 
-                    cuurentMeshRef.Mesh = MakeMeshIndexed(_assScene.Meshes[meshIndex]);
+                    cuurentMeshRef.Mesh = MakeMeshIndexed(_assimpScene.Meshes[meshIndex]);
 
-                    cuurentMeshRef.Material.ModelName = _assScene.Meshes[meshIndex].Name;
+                    cuurentMeshRef.Material.ModelName = _assimpScene.Meshes[meshIndex].Name;
 
                     cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.BaseColour, @"commontextures\default_base_colour.dds");
                     cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.Normal, @"commontextures\default_normal.dds");
@@ -151,7 +111,7 @@ namespace CommonControls.ModelImportExport
             using (var importer = new AssimpContext())
             {
                 // -- left all the flags outcommented, 
-                _assScene = importer.ImportFile(fileName,
+                _assimpScene = importer.ImportFile(fileName,
                    //PostProcessSteps.FindInstances | // No effect + slow?
                    //PostProcessSteps.FindInvalidData |
                    //PostProcessSteps.FlipUVs |
@@ -166,10 +126,14 @@ namespace CommonControls.ModelImportExport
                    PostProcessSteps.CalculateTangentSpace |
                    //PostProcessSteps.FixInFacingNormals |
                    PostProcessSteps.GlobalScale
-                   );
-            }
+                   );                          
+            }            
 
-            LoadSkeletonFile();
+            var transform = _assimpScene.RootNode.Transform;
+            var flags = _assimpScene.SceneFlags;
+
+            var assimpFileService = new AssimpFileService(_packFileService, _assimpScene);
+            _skeletonFile = assimpFileService.LoadSkeletonFileByIdString();
         }
 
         /// <summary>
@@ -272,22 +236,22 @@ namespace CommonControls.ModelImportExport
             Assimp.Vector3D bitangent)
         {
             // -- Attempt at getting unit values from the "native"
-            //Scene.Metadata.TryGetValue("UnitScaleFactor", out var value);
+            //_assimpScene.Metadata.TryGetValue("UnitScaleFactor", out var value);
             //float scaleFactor = 1 / (float)value.DataAs<double>();
 
             // -- Assimp outpus unnormalized normals and tangents.
-            var normalizedNormal = new Vector3(-normal.X, normal.Y, normal.Z);
+            var normalizedNormal = new Vector3(normal.X, normal.Y, normal.Z);
             normalizedNormal.Normalize();
 
-            var normalizedTangent = new Vector3(-tangent.X, tangent.Y, tangent.Z);
+            var normalizedTangent = new Vector3(tangent.X, tangent.Y, tangent.Z);
             normalizedTangent.Normalize();
 
-            var normalizedBitangent = new Vector3(-bitangent.X, bitangent.Y, bitangent.Z);
+            var normalizedBitangent = new Vector3(bitangent.X, bitangent.Y, bitangent.Z);
             normalizedBitangent.Normalize();
 
             var vertex = new CommonVertex()
             {
-                Position = new Vector4(-position.X, position.Y, position.Z, 0),// * scaleFactor,
+                Position = new Vector4(position.X, position.Y, position.Z, 0),// * scaleFactor,
                 Normal = normalizedNormal,
                 Uv = new Vector2(textureCoords.X, -textureCoords.Y),
                 //Uv = new Vector2(textureCoords.X, textureCoords.Y),

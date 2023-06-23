@@ -84,7 +84,8 @@ namespace AssetEditor.ViewModels
                 settingsService.Save();
             }
 
-            settingsService.CurrentSettings.LoadCaPacksByDefault = false;
+            // TODO: MEANT TO "PING" Ole on PR review: can I remove this line completely? It is what making that setting not work.
+            //settingsService.CurrentSettings.LoadCaPacksByDefault = false;
 
             if (settingsService.CurrentSettings.LoadCaPacksByDefault)
             {

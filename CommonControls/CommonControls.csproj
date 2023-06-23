@@ -116,6 +116,7 @@
 	  <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
 	  <PackageReference Include="FluentValidation" Version="11.5.2" />	  
 	<PackageReference Include="AssimpNet" Version="5.0.0-beta1" />	
+    <PackageReference Include="UkooLabs.FbxSharpie" Version="1.0.99" />
   </ItemGroup>
 
   <ItemGroup>
@@ -356,10 +357,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\debug_source_file\assimpnet\AssimpNet\AssimpNet.csproj" />
     <ProjectReference Include="..\Monogame.WpfInterop\Monogame.WpfInterop.csproj" />
   </ItemGroup>
   
+
   <ItemGroup>
     <Compile Update="Editors\AnimMeta\View\MetaEntriesListView.xaml.cs">
       <SubType>Code</SubType>

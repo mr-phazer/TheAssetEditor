@@ -43,7 +43,9 @@ namespace View3D.Commands.Object
             foreach (var meshNode in _meshList)
             {
                 var originalMesh = meshNode.Geometry;
-                var reducedMesh = MeshOptimizerService.CreatedReducedCopy(originalMesh, _factor);
+
+                var meshOptimizerService = new MeshOptimizerService();
+                var reducedMesh = meshOptimizerService.CreatedReducedCopy(originalMesh, _factor);
                 meshNode.Geometry = reducedMesh;
                 _originalGeometry.Add(originalMesh);
             }

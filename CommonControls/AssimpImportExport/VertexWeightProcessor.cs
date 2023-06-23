@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CommonControls.ModelImportExport
+namespace CommonControls.AssimpImportExport
 {
     public class VertexWeightProcessor
     {

@@ -19,7 +19,7 @@ using Assimp.Unmanaged;
 using System.IO;
 
 
-namespace CommonControls.ModelImportExport
+namespace CommonControls.AssimpImportExport
 {
     public class AssimpUtil
     {

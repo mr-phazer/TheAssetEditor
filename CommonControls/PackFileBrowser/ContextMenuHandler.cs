@@ -3,7 +3,7 @@ using CommonControls.Common;
 using CommonControls.FileTypes.PackFiles.Models;
 using CommonControls.FileTypes.RigidModel;
 using CommonControls.Services;
-using CommonControls.ModelImportExport;
+using CommonControls.AssimpImportExport;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -162,14 +162,14 @@ namespace CommonControls.PackFileBrowser
                 var outPath = ""; // dialogBox.FileNames[0];
                 //try
                 //{
-                    var assimpExporter = new AssimpExporter();
+                    var assimpExporter = new AssimpExporter(_packFileService);
 
                     var packFie = _packFileService.FindFile(parentPath);
                     byte[] rmv2RawBuffer =packFie.DataSource.ReadData();
                     var factory = ModelFactory.Create();
                     var rmv2File = factory.Load(rmv2RawBuffer);
 
-                    assimpExporter.ExportModelFile(rmv2File, outPath);
+                    assimpExporter.ExportRmv2ModelFile(rmv2File, outPath);
 
                 //}
                 //catch (Exception e)
