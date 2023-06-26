@@ -15,6 +15,7 @@ using static CommonControls.FileTypes.Animation.AnimationFile;
 using System.Collections.Generic;
 using System.Windows.Media.Animation;
 using Quaternion = Microsoft.Xna.Framework.Quaternion;
+using SharpDX.Direct3D9;
 
 namespace CommonControls.AssimpImportExport
 {
@@ -91,21 +92,26 @@ namespace CommonControls.AssimpImportExport
 
         public void InitAnimation(AnimationFile animationFile)
         {
-            // fill 1 frame 
+            // fill 1 frame             
+
             _assimpScene.Animations.Add(new Animation());
+            _assimpScene.Animations[0].Name = "testClip";                        
+
             _assimpScene.Animations[0].NodeAnimationChannels.AddRange(new NodeAnimationChannel[Skeleton.Bones.Length]);
 
             var frameCount = animationFile.Header.AnimationTotalPlayTimeInSec * animationFile.Header.FrameRate;
 
-            _assimpScene.Animations[0].DurationInTicks = frameCount * 1000;
-            _assimpScene.Animations[0].TicksPerSecond = animationFile.Header.FrameRate * 1000;
+            _assimpScene.Animations[0].DurationInTicks = 3000;
+            _assimpScene.Animations[0].TicksPerSecond = 1000;
 
             // TODO: switch to using "Add" for frame?
             for (int boneIndex = 0; boneIndex < Skeleton.Bones.Length; boneIndex++)
             {
                 _assimpScene.Animations[0].NodeAnimationChannels[boneIndex] = new NodeAnimationChannel();
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].NodeName = Skeleton.Bones[boneIndex].Name;
                 _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].PositionKeys.AddRange(new Assimp.VectorKey[animationFile.AnimationParts[0].DynamicFrames.Count]);
                 _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].RotationKeys.AddRange(new Assimp.QuaternionKey[animationFile.AnimationParts[0].DynamicFrames.Count]);
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].ScalingKeys.AddRange(new Assimp.VectorKey[animationFile.AnimationParts[0].DynamicFrames.Count]);
             }
         }
 
@@ -114,36 +120,86 @@ namespace CommonControls.AssimpImportExport
             InitAnimation(animationFile);
 
             var keyFrames = CreateKeyFramesFromAnimationPart(_bindPoseFile, animationFile.AnimationParts[0]);
-
-            SetOneFrame(keyFrames, 0, 0);
+            
+            //int frameIndex = 0;
+            for (int frameIndex = 0; frameIndex < keyFrames.Count; frameIndex++)
+            {
+                SetOneFrame(keyFrames, 1.0f / animationFile.Header.FrameRate, frameIndex);
+            }            
         }
 
-        private void SetOneFrame(List<KeyFrame> animationFile, int frameIndex, int animClipFragMent = 0)
+        private void SetOneFrame(List<KeyFrame> KeyFrames, float frameTime,  int frameIndex)
         {
             for (int boneIndex = 0; boneIndex < Skeleton.Bones.Length; boneIndex++)
             {
+                float time = frameTime * (float)frameIndex;
                 _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].NodeName = Skeleton.Bones[boneIndex].Name;
                 var transValue = new Assimp.Vector3D()
                 {
-                    X = -(animationFile[frameIndex].Position[boneIndex].X),
-                    Y = animationFile[frameIndex].Position[boneIndex].Y,
-                    Z = animationFile[frameIndex].Position[boneIndex].Z,
+                    X = -(KeyFrames[frameIndex].Position[boneIndex].X * AssimpExporter.SCALE_FACTOR),
+                    Y = KeyFrames[frameIndex].Position[boneIndex].Y * AssimpExporter.SCALE_FACTOR,
+                    Z = KeyFrames[frameIndex].Position[boneIndex].Z * AssimpExporter.SCALE_FACTOR,
                 };
 
                 // TODO: use Add here instead?
-                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].PositionKeys[frameIndex] = new VectorKey(0, transValue);
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].PositionKeys[frameIndex] = new VectorKey(time, transValue);
 
                 var quatValue = new Assimp.Quaternion()
                 {
-                    X = animationFile[frameIndex].Rotation[boneIndex].X,
-                    Y = -(animationFile[frameIndex].Rotation[boneIndex].Y),
-                    Z = -(animationFile[frameIndex].Rotation[boneIndex].Z),
-                    W = animationFile[frameIndex].Rotation[boneIndex].W,
+                    X = KeyFrames[frameIndex].Rotation[boneIndex].X,
+                    Y = -(KeyFrames[frameIndex].Rotation[boneIndex].Y),
+                    Z = -(KeyFrames[frameIndex].Rotation[boneIndex].Z),
+                    W = KeyFrames[frameIndex].Rotation[boneIndex].W,
                 };
 
                 // TODO: use Add here instead?
-                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].RotationKeys[frameIndex] = new QuaternionKey(0, quatValue);
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].RotationKeys[frameIndex] = new QuaternionKey(time, quatValue);
 
+                var scaleValue = new Assimp.Vector3D()
+                {
+                    X = 1.0f,
+                    Y = 1.0f,
+                    Z = 1.0f,
+                };
+
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].ScalingKeys[frameIndex] = new Assimp.VectorKey(time, scaleValue);
+            }
+        }
+        private void SetOneFrameBindPose(AnimationFile bindPose, float frameTime,  int frameIndex)
+        {
+            for (int boneIndex = 0; boneIndex < Skeleton.Bones.Length; boneIndex++)
+            {
+                float time = frameTime * (float)frameIndex;
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].NodeName = Skeleton.Bones[boneIndex].Name;
+                var transValue = new Assimp.Vector3D()
+                {
+                    X = -(bindPose.AnimationParts[0].DynamicFrames[frameIndex].Transforms[boneIndex].X* AssimpExporter.SCALE_FACTOR),
+                    Y = bindPose.AnimationParts[0].DynamicFrames[frameIndex].Transforms[boneIndex].Y * AssimpExporter.SCALE_FACTOR,
+                    Z = bindPose.AnimationParts[0].DynamicFrames[frameIndex].Transforms[boneIndex].Z * AssimpExporter.SCALE_FACTOR,
+                };
+
+                // TODO: use Add here instead?
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].PositionKeys[frameIndex] = new VectorKey(time, transValue);
+
+                var quatValue = new Assimp.Quaternion()
+                {
+                    X = bindPose.AnimationParts[0].DynamicFrames[frameIndex].Quaternion[boneIndex].X,
+                    Y = -(bindPose.AnimationParts[0].DynamicFrames[frameIndex].Quaternion[boneIndex].Y),
+                    Z = -(bindPose.AnimationParts[0].DynamicFrames[frameIndex].Quaternion[boneIndex].Z),
+                    W = bindPose.AnimationParts[0].DynamicFrames[frameIndex].Quaternion[boneIndex].W,
+                };
+
+                // TODO: use Add here instead?
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].RotationKeys[frameIndex] = new QuaternionKey(time, quatValue);
+
+                var scaleValue = new Assimp.Vector3D()
+                {
+                    X = 1.0f,
+                    Y = 1.0f,
+                    Z = 1.0f,
+                };
+
+                _assimpScene.Animations[0].NodeAnimationChannels[boneIndex].ScalingKeys[frameIndex] = new Assimp.VectorKey(time, scaleValue);
             }
         }
 

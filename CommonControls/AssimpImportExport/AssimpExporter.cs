@@ -160,6 +160,7 @@ namespace CommonControls.AssimpImportExport
 
                 // process meshes
                 var assimpMesh = GetAssimpMeshFromRmv2Mesh(rmv2Model.Mesh);
+                
                 MakeAssimpMeshBones(assimpMesh, asSkeleton);
                 CopyMeshVertexWeights(assimpMesh, rmv2Model.Mesh);
 
