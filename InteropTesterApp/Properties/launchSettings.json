@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "InteropTesterApp": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

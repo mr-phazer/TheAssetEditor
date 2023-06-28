@@ -43,9 +43,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioResearch", "AudioResea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audio", "Audio\Audio.csproj", "{B9488B52-AC74-4AFC-B376-DBD1096585E4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InteropTestDll", "InteropTest\InteropTest.vcxproj", "{736157B9-4585-4675-9ECD-0A9AE34EF5EB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBXHelpDllCpp", "InteropTest\InteropTest.vcxproj", "{736157B9-4585-4675-9ECD-0A9AE34EF5EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteropTesterApp", "InteropTesterApp\InteropTesterApp.csproj", "{023D2F7D-707F-44B1-A28C-4CFCBA031EFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FBXWrapper", "InteropTesterApp\FBXWrapper.csproj", "{023D2F7D-707F-44B1-A28C-4CFCBA031EFD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBXWRapperDllCPP", "FBXWRapperDll\FBXWRapperDll.vcxproj", "{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -237,6 +239,18 @@ Global
 		{023D2F7D-707F-44B1-A28C-4CFCBA031EFD}.Release|x64.Build.0 = Release|Any CPU
 		{023D2F7D-707F-44B1-A28C-4CFCBA031EFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{023D2F7D-707F-44B1-A28C-4CFCBA031EFD}.Release|x86.Build.0 = Release|Any CPU
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Debug|Any CPU.Build.0 = Debug|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Debug|x64.ActiveCfg = Debug|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Debug|x64.Build.0 = Debug|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Debug|x86.ActiveCfg = Debug|Win32
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Debug|x86.Build.0 = Debug|Win32
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Release|Any CPU.ActiveCfg = Release|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Release|Any CPU.Build.0 = Release|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Release|x64.ActiveCfg = Release|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Release|x64.Build.0 = Release|x64
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Release|x86.ActiveCfg = Release|Win32
+		{15AAE76D-0B83-45A2-B8AB-FD7BF38BDDC3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
