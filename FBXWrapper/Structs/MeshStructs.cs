@@ -21,59 +21,59 @@ namespace FBXWrapper.Structs
     [StructLayout(LayoutKind.Sequential)]
     public struct XMFLOAT4
     {
-        float x;
-        float y;
-        float z;
-        float w;
+        public float x;
+        public float y;
+        public float z;
+        public float w;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XMFLOAT3
     {
-        float x;
-        float y;
-        float z;
+        public float x;
+        public float y;
+        public float z;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XMFLOAT2
     {
-        float x;
-        float y;
+        public float x;
+        public float y;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct BoneKey
     {
-        XMFLOAT3 translation;
-        XMFLOAT4 quaternion;
-        double timeStampe;
+        public XMFLOAT3 translation;
+        public XMFLOAT4 quaternion;
+        public double timeStampe;
     };
 
     [StructLayout(LayoutKind.Sequential)]
-    struct VertexInfluence
+    public struct VertexInfluence
     {
-        uint boneIndex;
-        float weight;
+        public uint boneIndex;
+        public float weight;
     };
 
     [StructLayout(LayoutKind.Sequential)]
     public struct PackedCommonVertex
     {
-        XMFLOAT4 Position;
-        XMFLOAT3 Normal;
-        XMFLOAT3 BiNormal;
-        XMFLOAT3 Tangent;
-        XMFLOAT2 Uv;
-        XMFLOAT4 Color;
+        public XMFLOAT4 Position;
+        public XMFLOAT3 Normal;
+        public XMFLOAT3 BiNormal;
+        public XMFLOAT3 Tangent;
+        public XMFLOAT2 Uv;
+        public XMFLOAT4 Color;
 
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.Struct, SizeConst = 4)]
-        VertexInfluence[] influences; // fixed array length 4        
+        public VertexInfluence[] ?influences; // fixed array length 4        
 
-        int WeightCount;
+        public int WeightCount;
     };
 
-    struct PackedMesh
+    public class PackedMesh
     {
         public string Name { set; get; }
         public List<PackedCommonVertex> Vertices { set; get; }

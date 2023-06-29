@@ -18,10 +18,7 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FBXWRapperCPP_DLL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshProcessing\MeshProcessing.h">
+    <ClInclude Include="FBXSceneContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Logging\Logging.h">
@@ -36,15 +33,24 @@
     <ClInclude Include="DataStructures\structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FBXServices\FBXMeshGeomtryService.h">
+    <ClInclude Include="FBXServices\FBXMeshGeometryService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshProcessing\MeshProcessingHelper.h">
+    <ClInclude Include="Helpers\MeshProcessingHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXServices\FBXSkinService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Tools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXServices\FBXMeshProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FBXWRapperCPP_DLL.cpp">
+    <ClCompile Include="FBXSceneContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
@@ -59,10 +65,16 @@
     <ClCompile Include="FBXServices\FBXNodeGeometryService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FBXServices\FBXMeshGeomtryService.cpp">
+    <ClCompile Include="FBXServices\FBXMeshGeometryService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MeshProcessing\MeshProcessingHelper.cpp">
+    <ClCompile Include="Helpers\MeshProcessingHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXServices\FBXSkinService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXServices\FBXMeshProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

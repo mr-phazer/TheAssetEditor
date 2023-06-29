@@ -1,7 +1,7 @@
 ﻿using CommonControls.FileTypes.PackFiles.Models;
 using CommonControls.Services;
 using CommonControls.FileTypes.RigidModel;
-using CommonControls.AssimpImportExport;
+using CommonControls.ModelFiles;
 using MoreLinq;
 using System;
 using System.Collections.Generic;

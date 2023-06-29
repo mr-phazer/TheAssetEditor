@@ -17,9 +17,9 @@ using Serilog;
 using CommonControls.Common;
 using Assimp.Unmanaged;
 using System.IO;
+using FBXWrapper;
 
-
-namespace CommonControls.AssimpImportExport
+namespace CommonControls.ModelFiles
 {
     public class AssimpUtil
     {
@@ -32,7 +32,21 @@ namespace CommonControls.AssimpImportExport
             var assimpImport = new AssimpImporter(pfs);
             assimpImport.ImportScene(filePath);
 
-            var rmv2File = assimpImport.MakeRMV2File();
+
+            var fbxSceneContainer = DLLFunctionsFBXSDK.CreateFBXContainer();
+
+            // fill FBXContainer with bone names
+            foreach (var bone in assimpImport._skeletonFile.Bones)
+            {
+                DLLFunctionsFBXSDK.AddBoneInfo(fbxSceneContainer, bone.Name);
+            }
+
+            DLLFunctionsFBXSDK.CreateSceneFBX(fbxSceneContainer, filePath);
+                     
+
+            var meshes = FBXScenContainerService.GetAllPackedMeshes(fbxSceneContainer);        
+            
+            var rmv2File = assimpImport.MakeRMV2FileFBXDLL_TESTER(meshes);
             var factory = ModelFactory.Create();
             var buffer = factory.Save(rmv2File);
 

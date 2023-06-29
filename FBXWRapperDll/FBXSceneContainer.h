@@ -16,7 +16,7 @@
 #include "Logging/Logging.h"
 #include "DataStructures/structs.h"
 
-FBXWRAPPERDLL_API
+//FBXWRAPPERDLL_API
 class FBXSCeneContainer
 {
 public:
@@ -28,8 +28,7 @@ public:
 	{
 		_log_action("CHECK: FBXSceneContainer Destroyed");
 		auto DEBUG_BREAK = 1; // TODO: remove 
-	};
-	
+	};	
 	
 	FBXSCeneContainer* CreateContainer()
 	{
@@ -38,26 +37,33 @@ public:
 	};
 
 
-	bool LoadSceneFile(const std::string& fileName);
+	bool LoadSceneFromFBXFile(const std::string& fileName);
 	
 	void readUnitsAndGeometry();
 
+	void AddBoneInfo(const std::string& boneName)
+	{
+		m_animFileBoneNames.push_back(boneName);
+	}
 
-	void GetVertices(int meshindex, PackedCommonVertex** ppVertices, int* itemCount)	{
-
-		*itemCount = m_meshes[meshindex].vertices.size();
-		*ppVertices = m_meshes[meshindex].vertices.data();
+	void GetVertices(int meshindex, PackedCommonVertex** ppVertices, int* itemCount)
+	{
+		*itemCount = static_cast<int>(m_packedMeshes[meshindex].vertices.size());
+		*ppVertices = m_packedMeshes[meshindex].vertices.data();
 	};
 
-	void GetIndices(int meshindex, uint16_t** ppVertices, int* itemCount)	{
+	void GetIndices(int meshindex, uint16_t** ppVertices, int* itemCount)	
+	{
 
-		*itemCount = m_meshes[meshindex].indices.size();
-		*ppVertices = m_meshes[meshindex].indices.data();
+		*itemCount = static_cast<int>(m_packedMeshes[meshindex].indices.size());
+		*ppVertices = m_packedMeshes[meshindex].indices.data();
 	};
 	
-
+	std::vector<
+		std::vector<int>> m_vecvecTempControlPointInfluences;
 //private:
-	std::vector<PackedMesh> m_meshes;
+	std::vector<PackedMesh> m_packedMeshes;
+	std::vector<std::string> m_animFileBoneNames; // ordered as the .ANIM file, so can be used for bonename -> index lookups
 	fbxsdk::FbxScene* m_fbxScene;
 };
 
@@ -66,6 +72,12 @@ FBXSCeneContainer* CreateFBXContainer()
 {
 	auto ret = new FBXSCeneContainer;
 	return ret;
+};
+
+FBXWRAPPERDLL_API_EXT
+void AddBoneInfo(FBXSCeneContainer* pInstance, char* boneName)
+{
+	pInstance->AddBoneInfo(boneName);
 };
 
 FBXWRAPPERDLL_API_EXT
@@ -89,12 +101,12 @@ void GetIndices(FBXSCeneContainer* pInstance, int meshindex, uint16_t** ppVertic
 FBXWRAPPERDLL_API_EXT 
 char* GetName(FBXSCeneContainer* pInstance, int meshindex)
 {
-	return (char*)pInstance->m_meshes[meshindex].meshName.c_str();
+	return (char*)pInstance->m_packedMeshes[meshindex].meshName.c_str();
 };
 
 FBXWRAPPERDLL_API_EXT 
 int GetMeshCount(FBXSCeneContainer* pInstance)
 {
-	return pInstance->m_meshes.size();
+	return static_cast<int>(pInstance->m_packedMeshes.size());
 };
 

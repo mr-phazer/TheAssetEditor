@@ -17,7 +17,7 @@ using System.Windows.Media.Animation;
 using Quaternion = Microsoft.Xna.Framework.Quaternion;
 using SharpDX.Direct3D9;
 
-namespace CommonControls.AssimpImportExport
+namespace CommonControls.ModelFiles
 {
     public class AssimpAnimationService
     {

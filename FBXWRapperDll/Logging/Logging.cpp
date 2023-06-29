@@ -5,30 +5,18 @@
 #include <sstream>
 #include <iostream>
 
-
 class WinConcole
 {
 public:
 	static void Print(const std::wstring& str, WORD Color = ConsoleBackground::BLACK | ConsoleForeground::WHITE)
 	{
-		HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-		WORD wOldColorAttrs;
-		CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-
-		/*
-		 * First save the current color information
-		 */
-		//GetConsoleScreenBufferInfo(h, &csbiInfo);
-		//wOldColorAttrs = csbiInfo.wAttributes;
-
+		HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);		
 		/*
 		 * Set the new color information
 		 */
 		SetConsoleTextAttribute(h, Color);
-
 		DWORD dwChars = 0;
 		WriteConsole(h, str.data(), (DWORD)str.size(), &dwChars, NULL);
-
 		
 		/*
 		* Set default color info

@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ModelFiles\Test_Model_Import.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\AnimationSlots\3kAnimationSlots.txt" />
     <None Remove="Resources\AnimationSlots\TroyAnimationSlots.txt" />
     <None Remove="Resources\AnimationSlots\Warhammer2AnimationSlots.txt" />
@@ -357,6 +361,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FBXWRapperDll\FBXWRapperDll.vcxproj" />
+    <ProjectReference Include="..\FBXWrapper\FBXWrapper.csproj" />
     <ProjectReference Include="..\Monogame.WpfInterop\Monogame.WpfInterop.csproj" />
   </ItemGroup>
   

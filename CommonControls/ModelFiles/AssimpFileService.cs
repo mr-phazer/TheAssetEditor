@@ -13,7 +13,7 @@ using Filetypes.ByteParsing;
 using System.Linq;
 using static CommonControls.Editors.AnimationPack.Converters.AnimationBinFileToXmlConverter;
 
-namespace CommonControls.AssimpImportExport
+namespace CommonControls.ModelFiles
 {
     public class AssimpFileService
     {

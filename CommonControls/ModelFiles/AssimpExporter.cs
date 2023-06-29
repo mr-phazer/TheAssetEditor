@@ -9,7 +9,7 @@ using CommonControls.Common;
 using System.Windows;
 using Microsoft.Xna.Framework;
 
-namespace CommonControls.AssimpImportExport
+namespace CommonControls.ModelFiles
 {
     public class AssimpExporter
     {

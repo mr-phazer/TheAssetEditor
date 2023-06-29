@@ -1,4 +1,4 @@
-#include "FBXMeshGeomtryService.h"
+#include "FBXMeshGeometryService.h"
 
 std::map<std::string, std::vector<fbxsdk::FbxVector2>> FBXMeshGeometryService::LoadUVInformation(FbxMesh* pMesh)
 {

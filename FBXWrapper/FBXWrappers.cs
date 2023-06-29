@@ -5,44 +5,45 @@ using System.Xml.Linq;
 using FBXWrapper.Structs;
 using System.Collections.Generic;
 
-
-
 namespace FBXWrapper
 {
-    public class DLLFunctions
+    public class DLLFunctionsFBXSDK
     {
-        [DllImport(@"K:\Coding\repos\TheAssetEditor\x64\Debug\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"K:\Coding\repos\TheAssetEditor\x64\Debug\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void CreateSceneFBX(IntPtr ptrInstance, string path);
 
 
-        //[DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?CreateContainer@FBXSCeneContainer@@QEAAPEAV1@XZ")]
+        //[DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?CreateContainer@FBXSCeneContainer@@QEAAPEAV1@XZ")]
         //public static extern IntPtr CreateContainer();
 
-        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateFBXContainer();
 
 
-        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetPackedVertices(IntPtr ptrInstances, int meshIndex, out IntPtr vertices, out int itemCount);
 
 
-        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetIndices(IntPtr ptrInstances, int meshIndex, out IntPtr vertices, out int itemCount);
 
-        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetName(IntPtr ptrInstances, int meshIndex);
 
-        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperCPP_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetMeshCount(IntPtr ptrInstances);
+
+        [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int AddBoneInfo(IntPtr ptrInstances, string boneName);
     }
 
-    class DllFbxWrapper
+    public class FBXScenContainerService
     {
         public static PackedCommonVertex[]? GetPackesVertices(IntPtr fbxContainer, int meshIndex)
         {
             IntPtr pVerticesPtr = IntPtr.Zero;
             int length = 0;
-            DLLFunctions.GetPackedVertices(fbxContainer, meshIndex, out pVerticesPtr, out length);
+            DLLFunctionsFBXSDK.GetPackedVertices(fbxContainer, meshIndex, out pVerticesPtr, out length);
 
             if (pVerticesPtr == IntPtr.Zero || length == 0)
             {
@@ -52,8 +53,10 @@ namespace FBXWrapper
             PackedCommonVertex[] data = new PackedCommonVertex[length];
             for (int vertexIndex = 0; vertexIndex < length; vertexIndex++)
             {
+                var ptr = Marshal.PtrToStructure(pVerticesPtr + vertexIndex * Marshal.SizeOf(typeof(PackedCommonVertex)), typeof(PackedCommonVertex));
 
-                data[vertexIndex] = (PackedCommonVertex)Marshal.PtrToStructure(pVerticesPtr + vertexIndex * Marshal.SizeOf(typeof(PackedCommonVertex)), typeof(PackedCommonVertex));
+                if (ptr != null)
+                    data[vertexIndex] = (PackedCommonVertex)ptr;
             }
 
             return data;
@@ -63,7 +66,7 @@ namespace FBXWrapper
         {
             IntPtr pIndices = IntPtr.Zero;
             int length = 0;
-            DLLFunctions.GetIndices(fbxContainer, meshIndex, out pIndices, out length);
+            DLLFunctionsFBXSDK.GetIndices(fbxContainer, meshIndex, out pIndices, out length);
 
             if (pIndices == IntPtr.Zero || length == 0)
                 return null;
@@ -72,22 +75,21 @@ namespace FBXWrapper
 
             for (int indicesIndex = 0; indicesIndex < length; indicesIndex++)
             {
-
                 indexArray[indicesIndex] = (ushort)Marshal.PtrToStructure(pIndices + indicesIndex * Marshal.SizeOf(typeof(ushort)), typeof(ushort));
             }
             return indexArray;
         }
 
-        public static PackedMesh? GetPackedMesh(IntPtr fbxContainer, int meshIndex)
+        public static PackedMesh GetPackedMesh(IntPtr fbxContainer, int meshIndex)
         {
-            var vertices = GetPackesVertices(fbxContainer, meshIndex);
             var indices = GetIndices(fbxContainer, meshIndex);
+            var vertices = GetPackesVertices(fbxContainer, meshIndex);            
 
-            IntPtr namePtr = DLLFunctions.GetName(fbxContainer, meshIndex);
+            IntPtr namePtr = DLLFunctionsFBXSDK.GetName(fbxContainer, meshIndex);
             var tempName = Marshal.PtrToStringUTF8(namePtr);
 
             if (vertices == null || indices == null || tempName == null)
-                return null;
+                throw new Exception("Params/Input Data Invalid: Vertices, Indices or Name == null");
 
             PackedMesh packedMesh = new PackedMesh();
             packedMesh.Vertices = new List<PackedCommonVertex>();
@@ -99,40 +101,21 @@ namespace FBXWrapper
             return packedMesh;
         }
 
-
-
-        static void Main(string[] args)
+        static public List<PackedMesh> GetAllPackedMeshes(IntPtr fbxSceneContainer)
         {
-
-
-            var fbxScnenContainer = DLLFunctions.CreateFBXContainer();
-
-
-
-
-
-            DLLFunctions.CreateSceneFBX(fbxScnenContainer, @"H:\Fbx\emp_karl_franz_humanoid01_BindPose.fbx");
-            var meshCount = DLLFunctions.GetMeshCount(fbxScnenContainer);
-
-            List<PackedMesh?> meshList = new List<PackedMesh?>();
+            List<PackedMesh> meshList = new List<PackedMesh>();
+            var meshCount = DLLFunctionsFBXSDK.GetMeshCount(fbxSceneContainer);
 
             for (int i = 0; i < meshCount; i++)
             {
-                meshList.Add(GetPackedMesh(fbxScnenContainer, i));
+                meshList.Add(GetPackedMesh(fbxSceneContainer, i));
             }
 
-
-
-
-            var DEBUG_BREAK = 1;
+            return meshList;
         }
-
-
     }
 
-
-
-public interface IDataWriter
+    public interface IDataWriter
 {
     public abstract void DoWriting(string path);
 };

@@ -19,17 +19,16 @@ using CommonControls.Common;
 using Assimp.Unmanaged;
 using UkooLabs.FbxSharpie;
 using fbxsdk = UkooLabs.FbxSharpie;
+using FBXWrapper.Structs;
 
-
-namespace CommonControls.AssimpImportExport
-{
-    
+namespace CommonControls.ModelFiles
+{    
     public class AssimpImporter
     {        
         ILogger _logger = Serilog.Log.ForContext<AssimpImporter>();
 
         private Assimp.Scene _assimpScene;
-        private AnimationFile _skeletonFile;
+        public AnimationFile _skeletonFile; // TODO: make properly either public or what?
         private PackFileService _packFileService;
 
         public AssimpImporter(PackFileService packFileService)
@@ -42,6 +41,71 @@ namespace CommonControls.AssimpImportExport
             ImportAssimpScene(fileName);
         }
 
+        public RmvFile MakeRMV2FileFBXDLL_TESTER(List<PackedMesh> packedMeshes)
+        {
+            int lodCount = 4; // make 4 idential LODs for compatibility reasons
+
+            RmvFile outputFile = new RmvFile()
+            {
+                Header = new RmvFileHeader()
+                {
+                    _fileType = Encoding.ASCII.GetBytes("RMV2"),
+                    SkeletonName = _skeletonFile != null ? _skeletonFile.Header.SkeletonName : "",
+                    Version = RmvVersionEnum.RMV2_V6,
+                    LodCount = (uint)lodCount,
+                },
+                LodHeaders = new RmvLodHeader[lodCount],
+            };
+
+            for (int i = 0; i < lodCount; i++)
+            {
+                outputFile.LodHeaders[i] =
+                    new Rmv2LodHeader_V6()
+                    {
+                        //MeshCount = (uint)_assimpScene.MeshCount,
+                        MeshCount = 1,
+                        QualityLvl = 0,
+                        LodCameraDistance = 0,
+                    };
+            }
+
+            outputFile.ModelList = new RmvModel[lodCount][];
+
+            for (int lodIndex = 0; lodIndex < lodCount; lodIndex++)
+            {
+                outputFile.ModelList[lodIndex] = new RmvModel[packedMeshes.Count];
+
+                for (int meshIndex = 0; meshIndex < packedMeshes.Count; meshIndex++)
+                {
+                    outputFile.ModelList[lodIndex][meshIndex] = new RmvModel();
+                    ref var cuurentMeshRef = ref outputFile.ModelList[lodIndex][meshIndex];
+
+                    MaterialFactory materialFactory = MaterialFactory.Create();
+
+                    cuurentMeshRef.Material = materialFactory.CreateMaterial(
+                        outputFile.Header.Version,
+                        (_skeletonFile != null) ? ModelMaterialEnum.weighted : ModelMaterialEnum.default_type,
+                        (_skeletonFile != null) ? FileTypes.RigidModel.VertexFormat.Cinematic : FileTypes.RigidModel.VertexFormat.Static);
+                                            
+                    cuurentMeshRef.Mesh = MakeMeshPacked_FBXSDK(packedMeshes[meshIndex]);
+                                        
+                    cuurentMeshRef.Material.ModelName = packedMeshes[lodIndex].Name;
+
+                    cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.BaseColour, @"commontextures\default_base_colour.dds");
+                    cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.Normal, @"commontextures\default_normal.dds");
+                    cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.MaterialMap, @"commontextures\default_material_mat.dds");
+
+                    cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.Diffuse, @"commontextures\default_metal_material_map.dds");
+                    cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.Specular, @"commontextures\default_metal_material_map.dds");
+                    cuurentMeshRef.Material.SetTexture(FileTypes.RigidModel.Types.TextureType.Gloss, @"commontextures\default_metal_material_map.dds");
+                };
+            }
+
+            outputFile.UpdateOffsets(); // refresh size/offsdet fields in 
+
+            return outputFile;
+        }        
+        
         public RmvFile MakeRMV2File()
         {
             int lodCount = 4; // make 4 idential LODs for compatibility reasons
@@ -204,6 +268,29 @@ namespace CommonControls.AssimpImportExport
 
             return unindexesMesh;
         }
+        // TOOD: move this into its own CLSS
+        private RmvMesh MakeMeshPacked_FBXSDK(PackedMesh packedInputMesh)
+        {
+            //var asFaces = assInputMesh.Faces;
+            //var asVertices = assInputMesh.Vertices;
+            //var asNormals = assInputMesh.Normals;
+            //var asTex = assInputMesh.TextureCoordinateChannels[0];
+            //var asBones = assInputMesh.Bones;
+
+            RmvMesh unindexesMesh = new RmvMesh();
+            unindexesMesh.IndexList = new ushort[packedInputMesh.Indices.Count];
+            unindexesMesh.VertexList = new CommonVertex[packedInputMesh.Vertices.Count];
+
+            var originalVerticesPacked = MakePackedVertices_FBXSDK(packedInputMesh);
+
+            unindexesMesh.VertexList = originalVerticesPacked.ToArray();
+            unindexesMesh.IndexList = packedInputMesh.Indices.ToArray();
+
+
+            
+
+            return unindexesMesh;
+        }
 
         /// <summary>
         ///  Make packed vertices from the assimp meshs attributes
@@ -220,6 +307,37 @@ namespace CommonControls.AssimpImportExport
             if (_skeletonFile != null)
             {
                 ProcessWeights(vertices, assInputMesh);
+            }
+
+            return vertices;
+        }
+        // TODO: move this into its own class
+        private List<CommonVertex> MakePackedVertices_FBXSDK(FBXWrapper.Structs.PackedMesh packedInputMesh)
+        {
+            List<CommonVertex> vertices = new CommonVertex[packedInputMesh.Vertices.Count].ToList();
+
+            for (int vertexIndex = 0; vertexIndex < vertices.Count; vertexIndex++)
+            {
+                vertices[vertexIndex] = MakePackedVertex_Test(
+                    packedInputMesh.Vertices[vertexIndex].Position,
+                    packedInputMesh.Vertices[vertexIndex].Normal,
+                    packedInputMesh.Vertices[vertexIndex].Uv,
+                    packedInputMesh.Vertices[vertexIndex].Tangent,
+                    packedInputMesh.Vertices[vertexIndex].BiNormal);
+
+                //TODO: all this weight copying, new function, and maybe use SOURCE.weight count, to determing many weights, if any should allocated/ set
+                vertices[vertexIndex].WeightCount = 4;
+                vertices[vertexIndex].BoneIndex = new byte[4];
+                vertices[vertexIndex].BoneWeight = new float[4];
+
+
+                for (int influenceIndex = 0; influenceIndex < 4; influenceIndex++)
+                {
+                    vertices[vertexIndex].BoneIndex[influenceIndex] = (byte)packedInputMesh.Vertices[vertexIndex].influences[influenceIndex].boneIndex;
+                    vertices[vertexIndex].BoneWeight[influenceIndex] = packedInputMesh.Vertices[vertexIndex].influences[influenceIndex].weight;
+                }
+
+                var DEBUG_BREAK = 1; // TODO: remove;
             }
 
             return vertices;
@@ -266,6 +384,54 @@ namespace CommonControls.AssimpImportExport
 
             vertex.BoneIndex = new byte[numWeight];
             vertex.BoneWeight = new float[numWeight];
+
+            return vertex;
+        }
+
+        private CommonVertex MakePackedVertex_Test(
+            XMFLOAT4 position,
+            XMFLOAT3 normal,
+            XMFLOAT2 textureCoords,
+            XMFLOAT3 tangent,
+            XMFLOAT3 bitangent)
+        {
+            // -- Attempt at getting unit values from the "native"
+            //_assimpScene.Metadata.TryGetValue("UnitScaleFactor", out var value);
+            //float scaleFactor = 1 / (float)value.DataAs<double>();
+
+            // -- Assimp outpus unnormalized normals and tangents.
+            var normalizedNormal = new Vector3(normal.x, normal.y, normal.z);
+            normalizedNormal.Normalize();
+
+            var normalizedTangent = new Vector3(tangent.x, tangent.y, tangent.z);
+            normalizedTangent.Normalize();
+
+            var normalizedBitangent = new Vector3(bitangent.x, bitangent.y, bitangent.z);
+            normalizedBitangent.Normalize();
+
+            var vertex = new CommonVertex()
+            {
+                Position = new Vector4(position.x, position.y, position.z, 0),// * scaleFactor,
+                Normal = normalizedNormal,
+                Uv = new Vector2(textureCoords.x, -textureCoords.y),
+                //Uv = new Vector2(textureCoords.X, textureCoords.Y),
+                Tangent = normalizedTangent,
+                BiNormal = normalizedBitangent,
+                WeightCount = 0,
+            };
+                        
+            // TODO: change once weight processing works
+            var numWeight = 4;
+            
+            if (_skeletonFile != null)
+                numWeight = 4;
+
+
+            vertex.BoneIndex = new byte[numWeight];
+            vertex.BoneWeight = new float[numWeight];
+
+            // TODO: change back to original once weight processing works
+            vertex.WeightCount = 4;
 
             return vertex;
         }

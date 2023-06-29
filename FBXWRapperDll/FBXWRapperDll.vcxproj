@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>FBXWRapperCPP_Dll</TargetName>
+    <TargetName>FBXWRapperDllCPP</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>FBXWRapperDll</TargetName>
@@ -128,13 +128,13 @@
       <AdditionalIncludeDirectories>H:\Coding\FBX SDK\2020.1;H:\Coding\FBX SDK\2020.1\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\debug\libfbxsdk-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\debug\libxml2-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\debug\zlib-md.lib;</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,22 +164,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DLLDefines.h" />
-    <ClInclude Include="FBXServices\FBXMeshGeomtryService.h" />
+    <ClInclude Include="FBXServices\FBXMeshGeometryService.h" />
+    <ClInclude Include="FBXServices\FBXMeshProcessor.h" />
     <ClInclude Include="FBXServices\FBXNodeGeometryService.h" />
-    <ClInclude Include="FBXWRapperCPP_DLL.h" />
+    <ClInclude Include="FBXSceneContainer.h" />
+    <ClInclude Include="FBXServices\FBXSkinService.h" />
+    <ClInclude Include="Helpers\Tools.h" />
     <ClInclude Include="Logging\Logging.h" />
-    <ClInclude Include="MeshProcessing\MeshProcessingHelper.h" />
-    <ClInclude Include="MeshProcessing\MeshProcessing.h" />
+    <ClInclude Include="Helpers\MeshProcessingHelper.h" />
     <ClInclude Include="DataStructures\structs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FBXServices\FBXMeshGeomtryService.cpp" />
-    <ClCompile Include="FBXWRapperCPP_DLL.cpp" />
+    <ClCompile Include="FBXServices\FBXMeshGeometryService.cpp" />
+    <ClCompile Include="FBXSceneContainer.cpp" />
+    <ClCompile Include="FBXServices\FBXMeshProcessor.cpp" />
+    <ClCompile Include="FBXServices\FBXSkinService.cpp" />
     <ClCompile Include="Logging\Logging.cpp" />
     <ClCompile Include="DataStructures\structs.cpp" />
     <ClCompile Include="FBXServices\FBXNodeGeometryService.cpp" />
-    <ClCompile Include="MeshProcessing\MeshProcessingHelper.cpp" />
+    <ClCompile Include="Helpers\MeshProcessingHelper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

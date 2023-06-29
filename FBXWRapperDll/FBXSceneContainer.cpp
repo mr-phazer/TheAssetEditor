@@ -1,6 +1,6 @@
-#include "FBXWRapperCPP_DLL.h"
-#include "MeshProcessing/MeshProcessing.h"
-
+#include "FBXSceneContainer.h"
+#include "FBXServices/FBXMeshProcessor.h"
+#include "FBXServices/FBXSkinService.h"
 
 
 
@@ -19,7 +19,7 @@ void FBXSCeneContainer::readUnitsAndGeometry()
 }
 
 
-bool FBXSCeneContainer::LoadSceneFile(const std::string& path)
+bool FBXSCeneContainer::LoadSceneFromFBXFile(const std::string& path)
 {
 	_log_action("Initializing FBX SDK importer...");
 	auto m_pSdkManager = fbxsdk::FbxManager::Create();
@@ -82,22 +82,26 @@ bool FBXSCeneContainer::LoadSceneFile(const std::string& path)
 
 	poImporter->Destroy();
 
+	return true;
 }
 
 bool FBXSCeneContainer::CreateSceneFromDiskFile(const std::string& path)
 {
-	if (!LoadSceneFile(path))
+	if (!LoadSceneFromFBXFile(path))
 		return _log_action_error("Scene Loading Failed!!");
 
 	std::vector<fbxsdk::FbxMesh*> fbxMeshList;
 	FbxMeshProcessor::FindMeshesInScene(m_fbxScene, fbxMeshList);
 
-	m_meshes.clear();
-	m_meshes.resize(fbxMeshList.size());
+	m_packedMeshes.clear();
+	m_packedMeshes.resize(fbxMeshList.size());
 	for (size_t meshIndex = 0; meshIndex < fbxMeshList.size(); meshIndex++)
-	{
-	
-		FbxMeshProcessor::MakeUnindexPackedMesh(m_fbxScene, fbxMeshList[meshIndex],  m_meshes[meshIndex]);
+	{	
+		std::vector<int> vertexToControlPoint;
+		FbxMeshProcessor::MakeUnindexPackedMesh(m_fbxScene, fbxMeshList[meshIndex],  m_packedMeshes[meshIndex], vertexToControlPoint);
+		FBXSkinProcessorService::ProcessSkin(fbxMeshList[meshIndex], m_packedMeshes[meshIndex], m_animFileBoneNames, vertexToControlPoint);
 	}
 	auto DEBUG_BREAK = 1; // TODO: REMOVE!
+
+	return true;
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CommonControls": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
