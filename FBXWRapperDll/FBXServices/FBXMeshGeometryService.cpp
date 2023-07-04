@@ -1,5 +1,7 @@
 #include "FBXMeshGeometryService.h"
 
+using namespace wrapdll;
+
 std::map<std::string, std::vector<fbxsdk::FbxVector2>> FBXMeshGeometryService::LoadUVInformation(FbxMesh* pMesh)
 {
 	std::map<std::string, std::vector<fbxsdk::FbxVector2>> mapvecRet;
@@ -29,12 +31,6 @@ std::map<std::string, std::vector<fbxsdk::FbxVector2>> FBXMeshGeometryService::L
 		if (lUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex &&
 			lUVElement->GetMappingMode() != FbxGeometryElement::eByControlPoint)
 		{
-			/*for (auto& it : mapvecRet)
-			{
-				it.second.clear();
-			}
-			mapvecRet.clear();*/
-
 			continue;
 		}
 

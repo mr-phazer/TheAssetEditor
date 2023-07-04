@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using FBXWrapper.Structs;
 using System.Collections.Generic;
+using FBXWrapper.Importer;
 
 namespace FBXWrapper
 { 
@@ -17,7 +18,7 @@ namespace FBXWrapper
             var fbxSceneContainer = DLLFunctionsFBXSDK.CreateFBXContainer();
             DLLFunctionsFBXSDK.CreateSceneFBX(fbxSceneContainer, @"H:\Fbx\emp_karl_franz_humanoid01_BindPose.fbx");
 
-            var meshes = FBXScenContainerService.GetAllPackedMeshes(fbxSceneContainer);
+            var meshes = FBXSceneImorterService.GetAllPackedMeshes(fbxSceneContainer);
 
             var DEBUG_BREAK = 1;
         }

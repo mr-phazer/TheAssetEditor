@@ -19,6 +19,14 @@ struct VertexInfluence
 	float weight = 0.0f;
 };
 
+struct ControlPointInfluences
+{
+	VertexInfluence influences[4];
+	int weightCount = 0;
+};
+
+
+
 struct PackedCommonVertex
 {
 	DirectX::XMFLOAT4 position = { 0, 0, 0, 0 };

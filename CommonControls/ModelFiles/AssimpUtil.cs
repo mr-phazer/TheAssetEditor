@@ -18,6 +18,8 @@ using CommonControls.Common;
 using Assimp.Unmanaged;
 using System.IO;
 using FBXWrapper;
+using FBXWrapper.Importer;
+
 
 namespace CommonControls.ModelFiles
 {
@@ -33,25 +35,26 @@ namespace CommonControls.ModelFiles
             assimpImport.ImportScene(filePath);
 
 
-            var fbxSceneContainer = DLLFunctionsFBXSDK.CreateFBXContainer();
+            //var fbxSceneContainer = DLLFunctionsFBXSDK.CreateFBXContainer();
 
             // fill FBXContainer with bone names
-            foreach (var bone in assimpImport._skeletonFile.Bones)
-            {
-                DLLFunctionsFBXSDK.AddBoneInfo(fbxSceneContainer, bone.Name);
-            }
 
-            DLLFunctionsFBXSDK.CreateSceneFBX(fbxSceneContainer, filePath);
-                     
 
-            var meshes = FBXScenContainerService.GetAllPackedMeshes(fbxSceneContainer);        
+
+
+
+
+            var fbxImportService = FBXSceneImorterService.Create(filePath, pfs);
+
+
+
             
-            var rmv2File = assimpImport.MakeRMV2FileFBXDLL_TESTER(meshes);
-            var factory = ModelFactory.Create();
-            var buffer = factory.Save(rmv2File);
+            //var rmv2File = assimpImport.MakeRMV2FileFBXDLL_TESTER(meshes);
+            //var factory = ModelFactory.Create();
+            //var buffer = factory.Save(rmv2File);
 
-            var packFile = new PackFile(outFileName, new MemorySource(buffer));
-            pfs.AddFileToPack(container, parentPackPath, packFile);
+            //var packFile = new PackFile(outFileName, new MemorySource(buffer));
+            //pfs.AddFileToPack(container, parentPackPath, packFile);
         }
 
         static public string GetDialogFilterStringSupportedFormats()

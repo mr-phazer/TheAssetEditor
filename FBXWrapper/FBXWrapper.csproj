@@ -17,4 +17,8 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CommonControls\CommonControls.csproj" />
+  </ItemGroup>
+
 </Project>

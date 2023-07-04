@@ -553,7 +553,10 @@ float4 mainPs(in PixelInputType _input, bool bIsFrontFace : SV_IsFrontFace) : SV
     float ambinent = 0.0f;
     float3 finalColor = float4(mapped, 1); // + float4(ambinent, ambinent, ambinent,0);
 
-    return float4(finalColor, 1);
+    
+    
+    //return float4(finalColor, 1); /
+    return float4(input.tangent, 1); 
 
 
 

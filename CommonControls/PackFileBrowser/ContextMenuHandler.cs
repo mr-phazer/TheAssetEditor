@@ -194,7 +194,8 @@ namespace CommonControls.PackFileBrowser
 
             var parentPath = _selectedNode.GetFullPath(); // get pack path, at mouse pointer        
             var dialog = new OpenFileDialog();
-            dialog.Filter = AssimpUtil.GetDialogFilterStringSupportedFormats();
+            dialog.Filter = "FBX Files (*.fbx)|*.fbx|All files (*.*)|*.*\\";
+
             if (dialog.ShowDialog() == true)
             {                
                 var files = dialog.FileNames;
@@ -206,7 +207,7 @@ namespace CommonControls.PackFileBrowser
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show($"Failed to import model file {file}. Error : {e.Message}", "Error");
+                        MessageBox.Show($"Failed to import model/scene file {file}. Error : {e.Message}", "Error");
                         _logger.Here().Error($"Failed to load file {file}. Error : {e}");
                     }
                 }

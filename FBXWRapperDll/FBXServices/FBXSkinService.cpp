@@ -1,6 +1,28 @@
 #include "FBXSkinService.h"
 
-bool FBXSkinProcessorService::ProcessSkin(FbxMesh* _poSourceFbxMesh, PackedMesh& destPackedMesh, const std::vector <std::string>& boneTable, const std::vector<int>& vertexToControlPoint)
+using namespace wrapdll;
+// TODO: make method that processes the skin and stores the influences per CONTROL POINT, before the vertex processing, so the weights can be fetched+set from "ProcessPolygon"
+// Do it for each mesh like:
+// - loop N
+// - Process Weights for MESH  N
+// - Process polygons for Mesh  N
+
+
+/// <summary>
+/// Processes FBXSkin, 
+/// convert the riging to simple {boneIndex, weight}
+/// add store for per "control point"
+/// </summary>
+/// <param name="_poSourceFbxMesh"></param>
+/// <param name="destPackedMesh"></param>
+/// <param name="boneTable"></param>
+/// <param name="controlPointInfluences"></param>
+/// <returns></returns>
+bool FBXSkinProcessorService::ProcessSkin(
+	FbxMesh* _poSourceFbxMesh, 
+	PackedMesh& destPackedMesh, 
+	const std::vector <std::string>& boneTable, 
+	std::vector<ControlPointInfluences>& controlPointInfluences)
 {
 	//int controlPointCount = _poSourceFbxMesh->GetControlPointsCount();
 	_log_action("Processing Weighing for mesh: "+ std::string(_poSourceFbxMesh->GetName()));
@@ -23,11 +45,22 @@ bool FBXSkinProcessorService::ProcessSkin(FbxMesh* _poSourceFbxMesh, PackedMesh&
 		return _log_action_warning(std::string(_poSourceFbxMesh->GetName()) + ":pSkin == NULL ");
 	}
 
-	return ExtractInfluencesFromSkin(pSkin, _poSourceFbxMesh,  destPackedMesh, boneTable, vertexToControlPoint);
+	return ExtractInfluencesFromSkin(pSkin, _poSourceFbxMesh,  destPackedMesh, boneTable, controlPointInfluences);
 }
 
-bool FBXSkinProcessorService::ExtractInfluencesFromSkin(fbxsdk::FbxSkin* poSkin, fbxsdk::FbxMesh* poFbxMeshNode, PackedMesh& destPackedMesh, const std::vector<std::string>& boneTable, const std::vector<int>& vertexToControlPoint)
+bool FBXSkinProcessorService::ExtractInfluencesFromSkin(
+	fbxsdk::FbxSkin* 
+	poSkin, fbxsdk::FbxMesh* poFbxMesh, 
+	PackedMesh& destPackedMesh, 
+	const std::vector<std::string>& boneTable, 
+	std::vector<ControlPointInfluences>& controlPointInfluences)
 {
+	// -- reset the control point influence container
+	auto controlPointCount = poFbxMesh->GetControlPointsCount();
+	controlPointInfluences.clear();
+	controlPointInfluences.resize(controlPointCount);
+
+
 	_log_action("Skin Name: " + std::string(poSkin->GetName()));
 
 	int cluster_count = poSkin->GetClusterCount();
@@ -35,7 +68,7 @@ bool FBXSkinProcessorService::ExtractInfluencesFromSkin(fbxsdk::FbxSkin* poSkin,
 	// check if there is no rigging data for this skin
 	if (cluster_count < 1)
 	{
-		return _log_action_warning(std::string(poFbxMeshNode->GetName()) + ": no weighting data found for skin: " + std::string(poSkin->GetName()) + " !");
+		return _log_action_warning(std::string(poFbxMesh->GetName()) + ": no weighting data found for skin: " + std::string(poSkin->GetName()) + " !");
 	}
 
 	// Rund through all clusters (1 cluster = 1 bone)
@@ -52,11 +85,11 @@ bool FBXSkinProcessorService::ExtractInfluencesFromSkin(fbxsdk::FbxSkin* poSkin,
 				
 		_log_action("Bone Table Size: " + std::to_string(boneTable.size()));
 
-		int boneIndex = tools::GetIndexOf(strBoneName, boneTable);
-		if (boneIndex == -1)
+		int boneIndexValue = tools::GetIndexOf(strBoneName, boneTable);
+		if (boneIndexValue == -1)
 			return _log_action_error("Bone in FBX File: '" + strBoneName + "' is not found in skeleton ANIM file!");
 
-		_log_action("Processing weighting for bone: '" + strBoneName + ", ID: " + std::to_string(boneIndex));
+		_log_action("Processing weighting for bone: '" + strBoneName + ", ID: " + std::to_string(boneIndexValue));
 
 		// get the number of control point that this "bone" is affecting
 		int controlPointIndexCount = pCluster->GetControlPointIndicesCount();
@@ -83,29 +116,43 @@ bool FBXSkinProcessorService::ExtractInfluencesFromSkin(fbxsdk::FbxSkin* poSkin,
 			int controlPointIndex = pControlPointIndices[influenceIndex];
 
 			// get weight associated with vertex
-			double weight = pControlPointWeights[influenceIndex];	
+			double boneWeight = pControlPointWeights[influenceIndex];
 
-			// run through all vertices
-			for (int vertexIndex = 0; vertexIndex < destPackedMesh.vertices.size(); vertexIndex++)
-			{
-				// get the control point index for the current vertex
-				auto controlPointIndexMesh = vertexToControlPoint[vertexIndex];
-				
-				// if it matches the rigging control point index, set weights
-				if (controlPointIndex == controlPointIndexMesh)
-				{
-					destPackedMesh.vertices[vertexIndex].weightCount++;
-					auto currentWeightIndex = destPackedMesh.vertices[vertexIndex].weightCount;
+			
+			controlPointInfluences[controlPointIndex].weightCount++;
+			auto currentWeightIndex = controlPointInfluences[controlPointIndex].weightCount;
 
-					destPackedMesh.vertices[vertexIndex].influences[currentWeightIndex-1].boneIndex = boneIndex;
-					destPackedMesh.vertices[vertexIndex].influences[currentWeightIndex-1].weight = static_cast<float>(weight);
-							
-					auto DEBUG_BREAK = 1; // TODO: REMOVE!
-				}
-			}
-			// add the influence {BONE, WEIGHT} to the proper vertex
-			//m_vecvecTempControlPointInfluences[ctrl_point_index].push_back({ BONE_ID, weight });
-			//vecMeshes[m_group].vecControlPoints[ctrl_point_index].addInfluence(0, 1.0f); // DEBUG CODE
+			controlPointInfluences[controlPointIndex].influences[currentWeightIndex - 1].boneIndex = boneIndexValue;
+			controlPointInfluences[controlPointIndex].influences[currentWeightIndex - 1].weight = static_cast<float>(boneWeight);
+
+
+
+			//destPackedMesh.vertices[controlPointIndex].influences[currentWeightIndex-1].boneIndex = boneIndex;
+				//		destPackedMesh.vertices[vertexIndex].influences[currentWeightIndex-1].boneIndex = boneIndex;
+
+
+
+				//// run through all vertices
+				//for (int vertexIndex = 0; vertexIndex < destPackedMesh.vertices.size(); vertexIndex++)
+				//{
+				//	// get the control point index for the current vertex
+				//	auto controlPointIndexMesh = vertexToControlPoint[vertexIndex];
+				//	
+				//	// if it matches the rigging control point index, set weights
+				//	if (controlPointIndex == controlPointIndexMesh)
+				//	{
+				//		destPackedMesh.vertices[vertexIndex].weightCount++;
+				//		auto currentWeightIndex = destPackedMesh.vertices[vertexIndex].weightCount;
+
+				//		destPackedMesh.vertices[vertexIndex].influences[currentWeightIndex-1].boneIndex = boneIndex;
+				//		destPackedMesh.vertices[vertexIndex].influences[currentWeightIndex-1].weight = static_cast<float>(weight);
+				//				
+				//		auto DEBUG_BREAK = 1; // TODO: REMOVE!
+				//	}
+				//}
+				// add the influence {BONE, WEIGHT} to the proper vertex
+				//m_vecvecTempControlPointInfluences[ctrl_point_index].push_back({ BONE_ID, weight });
+				//vecMeshes[m_group].vecControlPoints[ctrl_point_index].addInfluence(0, 1.0f); // DEBUG CODE
 		};
 	}
 

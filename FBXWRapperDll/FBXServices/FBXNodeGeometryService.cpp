@@ -2,7 +2,7 @@
 #include <vector>
 #include <map>
 
-
+using namespace wrapdll;
 
 FbxVector4 FBXNodeGeometryService::multT2(FbxNode* node, FbxVector4 vector) {
 	FbxAMatrix matrixGeo;

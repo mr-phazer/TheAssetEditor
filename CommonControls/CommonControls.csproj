@@ -361,8 +361,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FBXWRapperDll\FBXWRapperDll.vcxproj" />
-    <ProjectReference Include="..\FBXWrapper\FBXWrapper.csproj" />
     <ProjectReference Include="..\Monogame.WpfInterop\Monogame.WpfInterop.csproj" />
   </ItemGroup>
   
