@@ -33,78 +33,97 @@
     <ClInclude Include="DLLDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DataStructures\VertextStructs.h">
+    <ClInclude Include="DataStructures\PackedMeshStructs.h">
       <Filter>DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="FBXServices\FBXMeshGeometryService.h">
+    <ClInclude Include="Helpers\Geometry\FBXMeshGeometryHelper.h">
       <Filter>FBXServices</Filter>
     </ClInclude>
-    <ClInclude Include="FBXServices\FBXNodeGeometryService.h">
+    <ClInclude Include="Helpers\Geometry\FBXNodeGeometryHelper.h">
       <Filter>FBXServices</Filter>
     </ClInclude>
-    <ClInclude Include="FBXServices\FBXSkinService.h">
+    <ClInclude Include="Processing\FBXSkinProcessor.h">
       <Filter>FBXServices</Filter>
     </ClInclude>
     <ClInclude Include="Logging\Logging.h">
       <Filter>Logging</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\FBXUniiHelper.h">
+    <ClInclude Include="Helpers\FBXUnitHelper.h">
       <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\Tools.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\SimpleMath\SimpleMath.h">
+    <ClInclude Include="Helpers\MS_SimpleMath\SimpleMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FBXServices\FBXMeshProcessor.h">
+    <ClInclude Include="Processing\FBXMeshProcessor.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="FBXSCeneLoader\FBXSCeneContainer.h">
+    <ClInclude Include="FBXScene\FBXSCeneContainer.h">
       <Filter>FBXSceneContainer</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\FormatConverter.h">
+    <ClInclude Include="Helpers\VectorConverter.h">
       <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\FBXHelperFileUtil.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXServices\FBXSceneLoaderService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Processing\FBXVertexCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Processing\FBXMeshCreator.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataStructures\VertextStructs.cpp">
+    <ClCompile Include="DataStructures\PackedMeshStructs.cpp">
       <Filter>DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="FBXServices\FBXMeshGeometryService.cpp">
+    <ClCompile Include="Helpers\Geometry\FBXMeshGeometryHelper.cpp">
       <Filter>FBXServices</Filter>
     </ClCompile>
-    <ClCompile Include="FBXServices\FBXNodeGeometryService.cpp">
+    <ClCompile Include="Helpers\Geometry\FBXNodeGeometryHelper.cpp">
       <Filter>FBXServices</Filter>
     </ClCompile>
-    <ClCompile Include="FBXServices\FBXSkinService.cpp">
+    <ClCompile Include="Processing\FBXSkinProcessor.cpp">
       <Filter>FBXServices</Filter>
     </ClCompile>
     <ClCompile Include="Logging\Logging.cpp">
       <Filter>Logging</Filter>
     </ClCompile>
-    <ClCompile Include="FBXSCeneLoader\FBXSCeneContainer.cpp">
+    <ClCompile Include="FBXScene\FBXSCeneContainer.cpp">
       <Filter>FBXSceneContainer</Filter>
     </ClCompile>
-    <ClCompile Include="FBXServices\FBXMeshProcessor.cpp">
+    <ClCompile Include="Processing\FBXMeshProcessor.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\Gemotryhelp\FBXNodeSearcher.h">
+    <ClCompile Include="Helpers\Geometry\FBXNodeSearcher.h">
       <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXServices\FBXSceneLoaderService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Processing\FBXVertexCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Processing\FBXMeshCreator.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint">
       <Filter>FBXSceneContainer</Filter>
     </None>
-    <None Include="Helpers\SimpleMath\SimpleMath.inl">
+    <None Include="Helpers\MS_SimpleMath\SimpleMath.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

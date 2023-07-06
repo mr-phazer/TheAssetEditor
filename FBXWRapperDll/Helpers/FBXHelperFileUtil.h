@@ -2,6 +2,7 @@
 
 #include <fbxsdk.h>
 #include "..\Logging\Logging.h"
+#include "..\Helpers\FBXUnitHelper.h"
 
 namespace wrapdll
 {
@@ -10,15 +11,15 @@ namespace wrapdll
 	public:
 		static fbxsdk::FbxScene* CreateScene(const std::string path)
 		{
-			_log_action("Initializing FBX SDK importer...");
+			log_action("Initializing FBX SDK importer...");
 			auto m_pSdkManager = fbxsdk::FbxManager::Create();
 			if (!m_pSdkManager)
 			{
-				_log_action_error("Initializing FBX SDK importer...");
+				log_action_error("Initializing FBX SDK importer...");
 				return nullptr;
 			}
 
-			_log_action_success("Iinitializing FBX SDK importer...");
+			log_action_success("Iinitializing FBX SDK importer...");
 
 			// create an IOSettings object
 			fbxsdk::FbxIOSettings* ios = fbxsdk::FbxIOSettings::Create(m_pSdkManager, IOSROOT);
@@ -33,48 +34,56 @@ namespace wrapdll
 			ios->SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
 
 			// create an empty scene
-			auto fbxScene = fbxsdk::FbxScene::Create(m_pSdkManager, "");
+			auto pfbxScene = fbxsdk::FbxScene::Create(m_pSdkManager, "");
 
 			// Create an importer.
 			auto poImporter = fbxsdk::FbxImporter::Create(m_pSdkManager, "");
 
 			// Initialize the importer by providing a filename and the IOSettings to use
-			_log_action("Loading File: \"" + path + "\"");
+			log_action("Loading File: \"" + path + "\"");
 			auto fileInitResult = poImporter->Initialize(path.c_str(), -1, ios);
 			if (!fileInitResult)
 			{
-				_log_action("Error Loading File : \"" + path + " \". Stopping!");
+				log_action("Error Loading File : \"" + path + " \". Stopping!");
 				return nullptr;
 			}
 
-			int x, y, z;
+			int x=0, y=0, z=0;
 			poImporter->GetFileVersion(x, y, z);
-			_log_action("File uses FBX Version " + std::to_string(x) + "." + std::to_string(y) + "." + std::to_string(z));
+			log_action("File uses FBX Version " + std::to_string(x) + "." + std::to_string(y) + "." + std::to_string(z));
 
-			// -- copies the loaded file into the scene!!
-			if (!poImporter->Import(fbxScene))
+			// -- imports the loaded file into the scene!!
+			if (!poImporter->Import(pfbxScene))
 			{
-				_log_action_error("Import step failed. Fatal Error");
+				log_action_error("Importing scene failed. Fatal Error. Stopping!");
+				return nullptr;
+			}			
 
+			auto unitPlural = FBXUnitHelper::GetUnitAsString(pfbxScene);
+			log_info("File Uses Units: " + unitPlural);
+
+			log_write("Importing scene failed. Fatal Error. Stopping!");
+
+			fbxsdk::FbxGeometryConverter geometryConverter(m_pSdkManager);
+			
+			log_action("Triangulating....");
+			
+			bool bTriangulateResult = geometryConverter.Triangulate(pfbxScene, true, true);
+
+			if (!bTriangulateResult)
+			{
+				log_action_error("Triangulating Failed! Fatal. Stopping");
 				return nullptr;
 			}
-			//readUnitsAndGeometry();
 
-			fbxsdk::FbxGeometryConverter oGeometryConverter(m_pSdkManager);
-			_log_action("Triangulating....");
-			bool bTri = oGeometryConverter.Triangulate(fbxScene, true, true);
-			_log_action_success("Deep converting scene to 'DirectX' coord system...");
-
-
+			// perform "deep convert" of everything (including animations), to a certain coord system, that fits our needs
+			log_action_success("Performing Deep Conversion of scene to 'DirectX' coord system...");
 			fbxsdk::FbxAxisSystem oAxis(fbxsdk::FbxAxisSystem::DirectX);
-			oAxis.DeepConvertScene(fbxScene);
-
-
-			// The file is imported; so get rid of the importer.
+			oAxis.DeepConvertScene(pfbxScene);					
 
 			poImporter->Destroy();
 
-			return fbxScene;
+			return pfbxScene;
 		}
 	};
 }

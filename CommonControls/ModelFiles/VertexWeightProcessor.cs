@@ -46,7 +46,9 @@ namespace CommonControls.ModelFiles
         }
 
         /// <summary>
-        /// Sorts the weights-influences {weight, index} byte weight, so byte ascending weight
+        /// Normalized the weights so the sum is precisely = 1.0f
+        /// (like in vanilla)
+        /// Weights that do not sum to 1.0 can make weird skinning bugs
         /// </summary>        
         public static void NormalizeVertexWeights(CommonVertex vertex)
         {
@@ -56,7 +58,7 @@ namespace CommonControls.ModelFiles
                 weightSum += vertex.BoneWeight[weightIndex];
             }
 
-            float scaleFactor = 1 / weightSum;
+            float scaleFactor = 1.0f / weightSum;
                         
             for (int weightIndex = 0; weightIndex < vertex.WeightCount; weightIndex++)
             {
@@ -69,8 +71,10 @@ namespace CommonControls.ModelFiles
             public int index = 0;
             public float weight = 0.0f;
         };
+
         /// <summary>
-        /// Normalizes the weights, so SUM = 1.0f
+        /// Sorts the influences by weight, index} descending weight value 
+        /// (like in vanilla)
         /// </summary>        
         public static void SortVertexWeights(CommonVertex vertex)
         {

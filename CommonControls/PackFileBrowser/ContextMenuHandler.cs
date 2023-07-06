@@ -17,7 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-
+using CommonControls.ModelFiles.FBX;
 
 namespace CommonControls.PackFileBrowser
 {
@@ -201,15 +201,18 @@ namespace CommonControls.PackFileBrowser
                 var files = dialog.FileNames;
                 foreach (var file in files)
                 {                    
-                    try
+                // TODO: renable exceptions handling
+                    //try
                     {
-                        AssimpUtil.ImportAssimpDiskFileToPack(_packFileService, _selectedNode.FileOwner, parentPath, file);                                                 
+                        
+
+                        MeshToRmv2FileHelper.Import3dModelDiskFileToPack(_packFileService, _selectedNode.FileOwner, parentPath, file);                                                 
                     }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show($"Failed to import model/scene file {file}. Error : {e.Message}", "Error");
-                        _logger.Here().Error($"Failed to load file {file}. Error : {e}");
-                    }
+                    //catch (Exception e)
+                    //{
+                    //    MessageBox.Show($"Failed to import model/scene file {file}. Error : {e.Message}", "Error");
+                    //    _logger.Here().Error($"Failed to load file {file}. Error : {e}");
+                    //}
                 }
             }
         }

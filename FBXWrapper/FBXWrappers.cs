@@ -134,7 +134,7 @@
 ////    public abstract void DoWriting(string path);
 ////};
 
-////public class DataWriterText : IDataWriter // impl for text
+////public class DataWriterText : IDataWriter // logfunc::impl for text
 ////{
 ////    public virtual void DoWriting(string path) { /* write text;*/ }
 ////}

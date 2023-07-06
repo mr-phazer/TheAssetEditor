@@ -24,7 +24,7 @@
     <ProjectGuid>{15aae76d-0b83-45a2-b8ab-fd7bf38bddc3}</ProjectGuid>
     <RootNamespace>FBXWRapperDll</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
-    <ProjectName>FBXWRapperDllCPP</ProjectName>
+    <ProjectName>FBXWrapperNativeDll</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,7 +72,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>FBXWRapperDllCPP</TargetName>
+    <TargetName>FBXWrapperNative</TargetName>
+    <OutDir>$(SolutionDir)AssetEditor\bin\Debug\netcoreapp3.1\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>FBXWRapperDll</TargetName>
@@ -81,7 +82,8 @@
     <TargetName>FBXWRapperDll</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>FBXWRapperDll</TargetName>
+    <TargetName>FBXWrapperNative</TargetName>
+    <OutDir>$(SolutionDir)AssetEditor\bin\Release\netcoreapp3.1\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,11 +123,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;FBXWRAPPERDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FBXSDK_SHARED;__DEBUG;FBXWRAPPERDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>H:\Coding\FBX SDK\2020.1;H:\Coding\FBX SDK\2020.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>fbxsdk\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -133,7 +135,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\debug\libfbxsdk-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\debug\libxml2-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\debug\zlib-md.lib;$(SolutionDir)$(Platform)\$(Configuration)\DirectXTK.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);fbxsdk\lib\vs2019\x64\debug\libfbxsdk.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,38 +156,45 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\release\libfbxsdk-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\release\libxml2-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\release\zlib-md.lib;$(SolutionDir)$(Platform)\$(Configuration)\DirectXTK.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\release\libfbxsdk-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\release\libxml2-md.lib;H:\Coding\FBX SDK\2020.1\lib\vs2017\x64\release\zlib-md.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="cpp.hint" />
-    <None Include="Helpers\SimpleMath\SimpleMath.inl" />
+    <None Include="Helpers\MS_SimpleMath\SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DLLDefines.h" />
-    <ClInclude Include="FBXServices\FBXMeshGeometryService.h" />
-    <ClInclude Include="FBXServices\FBXMeshProcessor.h" />
-    <ClInclude Include="FBXServices\FBXNodeGeometryService.h" />
-    <ClInclude Include="FBXSCeneLoader\FBXSCeneContainer.h" />
-    <ClInclude Include="FBXServices\FBXSkinService.h" />
-    <ClInclude Include="Helpers\FormatConverter.h" />
+    <ClInclude Include="Processing\FBXMeshCreator.h" />
+    <ClInclude Include="Processing\FBXVertexCreator.h" />
+    <ClInclude Include="FBXServices\FBXSceneLoaderService.h" />
+    <ClInclude Include="Helpers\Geometry\FBXMeshGeometryHelper.h" />
+    <ClInclude Include="Processing\FBXMeshProcessor.h" />
+    <ClInclude Include="Helpers\Geometry\FBXNodeGeometryHelper.h" />
+    <ClInclude Include="FBXScene\FBXSCeneContainer.h" />
+    <ClInclude Include="Processing\FBXSkinProcessor.h" />
+    <ClInclude Include="Helpers\VectorConverter.h" />
     <ClInclude Include="Helpers\FBXHelperFileUtil.h" />
-    <ClInclude Include="Helpers\SimpleMath\SimpleMath.h" />
+    <ClInclude Include="Helpers\MS_SimpleMath\SimpleMath.h" />
     <ClInclude Include="Helpers\Tools.h" />
     <ClInclude Include="Logging\Logging.h" />
-    <ClInclude Include="Helpers\FBXUniiHelper.h" />
-    <ClInclude Include="DataStructures\VertextStructs.h" />
+    <ClInclude Include="Helpers\FBXUnitHelper.h" />
+    <ClInclude Include="DataStructures\PackedMeshStructs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FBXServices\FBXMeshGeometryService.cpp" />
-    <ClCompile Include="FBXSCeneLoader\FBXSCeneContainer.cpp" />
-    <ClCompile Include="FBXServices\FBXMeshProcessor.cpp" />
-    <ClCompile Include="Helpers\Gemotryhelp\FBXNodeSearcher.h" />
-    <ClCompile Include="FBXServices\FBXSkinService.cpp" />
+    <ClCompile Include="Processing\FBXMeshCreator.cpp" />
+    <ClCompile Include="Processing\FBXVertexCreator.cpp" />
+    <ClCompile Include="FBXServices\FBXSceneLoaderService.cpp" />
+    <ClCompile Include="Helpers\Geometry\FBXMeshGeometryHelper.cpp" />
+    <ClCompile Include="FBXScene\FBXSCeneContainer.cpp" />
+    <ClCompile Include="Processing\FBXMeshProcessor.cpp" />
+    <ClCompile Include="Helpers\Geometry\FBXNodeSearcher.h" />
+    <ClCompile Include="Processing\FBXSkinProcessor.cpp" />
     <ClCompile Include="Logging\Logging.cpp" />
-    <ClCompile Include="DataStructures\VertextStructs.cpp" />
-    <ClCompile Include="FBXServices\FBXNodeGeometryService.cpp" />
+    <ClCompile Include="DataStructures\PackedMeshStructs.cpp" />
+    <ClCompile Include="Helpers\Geometry\FBXNodeGeometryHelper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

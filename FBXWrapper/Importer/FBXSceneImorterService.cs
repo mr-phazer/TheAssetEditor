@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using FBXWrapper.Structs;
 using System;
 using System.Data;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
-using FBXWrapper.Structs;
 using System.Collections.Generic;
 using System.IO;
 using CommonControls.FileTypes.RigidModel;
@@ -22,12 +20,11 @@ using CommonControls.FileTypes.Animation;
 using Filetypes.ByteParsing;
 using System.Linq;
 using static CommonControls.Editors.AnimationPack.Converters.AnimationBinFileToXmlConverter;
+//using CommonControls.ModelFiles;
 
-
-namespace FBXWrapper.Importer
+namespace CommonControls.ModelFiles
 {
-
-    public class DLLFunctionsFBXSDK
+    public class FBXSCeneContainerDll
     {
         [DllImport(@"K:\Coding\repos\TheAssetEditor\x64\Debug\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void CreateSceneFBX(IntPtr ptrInstance, string path);
@@ -35,17 +32,15 @@ namespace FBXWrapper.Importer
         [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateFBXContainer();
 
-
         [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetPackedVertices(IntPtr ptrInstances, int meshIndex, out IntPtr vertices, out int itemCount);
-
 
         [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetIndices(IntPtr ptrInstances, int meshIndex, out IntPtr vertices, out int itemCount);
 
         [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetSkeletonNameFromSceneNodes(IntPtr ptrInstances);
-        
+       
         [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetName(IntPtr ptrInstances, int meshIndex);
 
@@ -53,7 +48,7 @@ namespace FBXWrapper.Importer
         public static extern int GetMeshCount(IntPtr ptrInstances);
 
         [DllImport("K:\\Coding\\repos\\TheAssetEditor\\x64\\Debug\\FBXWRapperDllCPP.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void AdddBoneInfo(IntPtr ptrInstances, char* boneName);
+        unsafe public static extern void AdddBoneInfo(IntPtr ptrInstances, System.String[] boneName, int len);
     }
 
     public class FBXSceneImorterService
@@ -67,27 +62,30 @@ namespace FBXWrapper.Importer
         public static FBXSceneImorterService Create(string fileName, PackFileService pfs)
         {
             FBXSceneImorterService newInstance = new FBXSceneImorterService();
-            newInstance._fbxcSceneContainerDLL = DLLFunctionsFBXSDK.CreateFBXContainer();
-            DLLFunctionsFBXSDK.CreateSceneFBX(newInstance._fbxcSceneContainerDLL, fileName);
+            newInstance._fbxcSceneContainerDLL = FBXSCeneContainerDll.CreateFBXContainer();
+            FBXSCeneContainerDll.CreateSceneFBX(newInstance._fbxcSceneContainerDLL, fileName);
 
 
-            var skeletonNamePtr = DLLFunctionsFBXSDK.GetSkeletonNameFromSceneNodes(newInstance._fbxcSceneContainerDLL);
+            var skeletonNamePtr = FBXSCeneContainerDll.GetSkeletonNameFromSceneNodes(newInstance._fbxcSceneContainerDLL);
 
             if (skeletonNamePtr != null)
             {
-                string skeletonName = Marshal.PtrToStringUTF8(namePtr);
+                string? skeletonName = Marshal.PtrToStringUTF8(skeletonNamePtr);
                 string skeletonPath = $"animations/skeletons/{skeletonName}.anim";
                 var packFile = pfs.FindFile(skeletonPath);
 
 
-                var animFIle = AnimationFile.Create(packFile.DataSource.ReadDataAsChunk())
+                var animFIle = AnimationFile.Create(packFile.DataSource.ReadDataAsChunk());
 
+               var animBoneNames = animFIle.Bones.Select(x => x.Name).ToArray();
 
-                foreach (var bone in animFIle.Bones)
+               unsafe
                 {
-                    DLLFunctionsFBXSDK.AdddBoneInfo(newInstance._fbxcSceneContainerDLL , bone.Name);
+                    foreach (var bone in animFIle.Bones)
+                    {
+                        FBXSCeneContainerDll.AdddBoneInfo(newInstance._fbxcSceneContainerDLL, animBoneNames, animBoneNames.Length);
+                    }
                 }
-                
             }
 
 
@@ -99,7 +97,7 @@ namespace FBXWrapper.Importer
         public string GetSkeletonFromSceneId()
         {
 
-            IntPtr namePtr = DLLFunctionsFBXSDK.GetSkeletonNameFromSceneNodes();
+            IntPtr namePtr = FBXSCeneContainerDll.GetSkeletonNameFromSceneNodes();
 
             string skeletonName = "";
             if (namePtr != IntPtr.Zero)
@@ -122,7 +120,7 @@ namespace FBXWrapper.Importer
         {
             IntPtr pVerticesPtr = IntPtr.Zero;
             int length = 0;
-            DLLFunctionsFBXSDK.GetPackedVertices(fbxContainer, meshIndex, out pVerticesPtr, out length);
+            FBXSCeneContainerDll.GetPackedVertices(fbxContainer, meshIndex, out pVerticesPtr, out length);
 
             if (pVerticesPtr == IntPtr.Zero || length == 0)
             {
@@ -145,7 +143,7 @@ namespace FBXWrapper.Importer
         {
             IntPtr pIndices = IntPtr.Zero;
             int length = 0;
-            DLLFunctionsFBXSDK.GetIndices(fbxContainer, meshIndex, out pIndices, out length);
+            FBXSCeneContainerDll.GetIndices(fbxContainer, meshIndex, out pIndices, out length);
 
             if (pIndices == IntPtr.Zero || length == 0)
                 return null;
@@ -164,7 +162,7 @@ namespace FBXWrapper.Importer
             var indices = GetIndices(fbxContainer, meshIndex);
             var vertices = GetPackesVertices(fbxContainer, meshIndex);
 
-            IntPtr namePtr = DLLFunctionsFBXSDK.GetName(fbxContainer, meshIndex);
+            IntPtr namePtr = FBXSCeneContainerDll.GetName(fbxContainer, meshIndex);
             var tempName = Marshal.PtrToStringUTF8(namePtr);
 
             if (vertices == null || indices == null || tempName == null)
@@ -183,7 +181,7 @@ namespace FBXWrapper.Importer
         static public List<PackedMesh> GetAllPackedMeshes(IntPtr fbxSceneContainer)
         {
             List<PackedMesh> meshList = new List<PackedMesh>();
-            var meshCount = DLLFunctionsFBXSDK.GetMeshCount(fbxSceneContainer);
+            var meshCount = FBXSCeneContainerDll.GetMeshCount(fbxSceneContainer);
 
             for (int i = 0; i < meshCount; i++)
             {

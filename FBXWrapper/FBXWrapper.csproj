@@ -21,4 +21,8 @@
     <ProjectReference Include="..\CommonControls\CommonControls.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Structs\" />
+  </ItemGroup>
+
 </Project>
