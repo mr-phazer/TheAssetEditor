@@ -166,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DLLDefines.h" />
+    <ClInclude Include="Helpers\Geometry\FBXBoneSorter.h" />
     <ClInclude Include="Processing\FBXMeshCreator.h" />
     <ClInclude Include="Processing\FBXVertexCreator.h" />
     <ClInclude Include="FBXServices\FBXSceneLoaderService.h" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Helpers\Geometry\FBXBoneSorter.cpp" />
     <ClCompile Include="Processing\FBXMeshCreator.cpp" />
     <ClCompile Include="Processing\FBXVertexCreator.cpp" />
     <ClCompile Include="FBXServices\FBXSceneLoaderService.cpp" />
