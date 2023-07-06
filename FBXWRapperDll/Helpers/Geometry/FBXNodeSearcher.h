@@ -45,9 +45,19 @@ namespace wrapdll
 			if (!poRootNode)
 				return false;
 
+			
+			
+				
+
 			FindFbxNodeByTypeRecursive(nodeType, poRootNode, fbxMeshes);
 
 			return true;
+		}
+
+
+		static bool CompareFbxFn(fbxsdk::FbxNode* a, fbxsdk::FbxNode* b)
+		{
+			return (std::string(a->GetName()) < std::string(b->GetName()));
 		}
 
 	private:	
@@ -109,9 +119,27 @@ namespace wrapdll
 		{
 			auto DEBUG_childCount = poParent->GetChildCount(); // TODO: REMOVE;
 
+
+			std::vector<fbxsdk::FbxNode*> sortedBones;
+
 			for (int childBoneIndex = 0; childBoneIndex < poParent->GetChildCount(); ++childBoneIndex)
 			{
-				fbxsdk::FbxNode* poCurrentNode = poParent->GetChild(childBoneIndex);
+				sortedBones.push_back(poParent->GetChild(childBoneIndex));
+			}
+
+			std::sort(sortedBones.begin(), sortedBones.end(), CompareFbxFn);
+
+			std::vector<std::string> test;
+
+			for (auto& i : sortedBones)
+			{
+				test.push_back(i->GetName());
+			}
+
+			for (int childBoneIndex = 0; childBoneIndex < poParent->GetChildCount(); ++childBoneIndex)
+			{
+				//fbxsdk::FbxNode* poCurrentNode = poParent->GetChild(childBoneIndex);
+				fbxsdk::FbxNode* poCurrentNode = sortedBones[childBoneIndex];
 
 				if (poCurrentNode)
 				{

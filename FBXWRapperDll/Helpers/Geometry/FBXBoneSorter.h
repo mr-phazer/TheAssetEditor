@@ -13,20 +13,101 @@ namespace wrapdll
 		std::string name = "{NOT SET}";
 		int id = -1;
 		int parentId = -1;
+		int tempIndex = -1;
 	};
 
 	static bool comparefn(BoneInfo& a, BoneInfo& b)
 	{
-		a.name = "sorted";
-		a.name = "alsosorted";
 		return a.parentId < b.parentId;
-
 	}
 
-	void swap(BoneInfo& a, BoneInfo& b)
+	static void SwapBones(BoneInfo& a, BoneInfo& b)
 	{
+		BoneInfo temBoneInfo = a;
+		a = b;
+		b = temBoneInfo;
+	}
 
 
+	static void ChangeParentIndexes(std::vector<BoneInfo>& bones, int oldIndex, int newIndex)
+	{
+		for (auto& bone : bones)
+		{
+			if (bone.parentId == oldIndex)
+			{
+				bone.tempIndex = newIndex;
+			}
+		}
+	}
+
+	static void UpdateIndexes(std::vector<BoneInfo>& bones)
+	{
+		for (auto& bone : bones)
+		{
+			bone.parentId == bone.tempIndex;							
+		}
+	}
+
+	static void SortBubbleAndUpdateIndexes(std::vector<BoneInfo>& bones)
+	{
+		bool bDone = true;
+		do
+		{
+			bDone = true;
+			for (size_t i = 0; i < bones.size(); i++)
+			{
+				if (i + 1 < bones.size()) // don't go out bounds
+				{
+					if (bones[i].parentId > bones[i + 1].parentId)
+					{
+						bDone = false;			
+												
+						SwapBones(bones[i], bones[i + 1]);
+						bones[i].id = i;
+						bones[i + 1].id = i+1;											
+
+						ChangeParentIndexes(bones, i, i+1);
+						ChangeParentIndexes(bones, i+1, i);
+
+						UpdateIndexes(bones);
+						
+					}
+				}
+			}
+		} while (!bDone);
+	}
+
+	static void SortBubbleAlphaAndUpdateIndexes(std::vector<BoneInfo>& bones)
+	{
+		bool bDone = true;
+		do
+		{
+			bDone = true;
+			for (size_t i = 0; i < bones.size(); i++)
+			{
+
+
+				if (i + 1 < bones.size()) // don't go out bounds
+				{
+
+
+					if (bones[i].name > bones[i + 1].name &&  bones[i].parentId <= bones[i + 1].parentId)					
+					{
+						bDone = false;			
+												
+						SwapBones(bones[i], bones[i + 1]);
+						bones[i].id = i;
+						bones[i + 1].id = i+1;											
+
+						ChangeParentIndexes(bones, i, i+1);
+						ChangeParentIndexes(bones, i+1, i);
+
+						UpdateIndexes(bones);
+						
+					}
+				}
+			}
+		} while (!bDone);
 	}
 
 
@@ -34,11 +115,19 @@ namespace wrapdll
 	class FBXBoneSorter
 	{
 		// TODO: MOVE / REMOVE, don't include in PR if it doesn't work 
-		void GetBonesFromsFbxScene(fbxsdk::FbxScene* m_poFbxScene)
+	public:
+		static std::vector<BoneInfo> GetBonesFromsFbxScene(fbxsdk::FbxScene* m_poFbxScene)
 		{
 			std::vector<fbxsdk::FbxNode*> fbxNodes;
 			FBXNodeSearcher::FindFbxNodesByType(fbxsdk::FbxNodeAttribute::EType::eSkeleton, m_poFbxScene, fbxNodes);
 
+
+			auto boneInfoList = FromBoneNodeToBoneInfo(fbxNodes);;
+
+			SortBubbleAndUpdateIndexes(boneInfoList);
+			SortBubbleAlphaAndUpdateIndexes(boneInfoList);
+
+			return boneInfoList;
 
 			/*
 				algo do bubble sort loop
@@ -67,12 +156,17 @@ namespace wrapdll
 		/// <summary>
 		/// Fills BoneInfo list, sets correct parent indexes
 		/// </summary>		
-		std::vector<BoneInfo> FromBoneNodeToBoneInfo(const std::vector<fbxsdk::FbxNode*>& fbxNodes)
+		static std::vector<BoneInfo> FromBoneNodeToBoneInfo(const std::vector<fbxsdk::FbxNode*>& fbxNodes)
 		{
 			std::vector<BoneInfo> bones;
 			for (size_t boneNodeIndex = 0; boneNodeIndex < fbxNodes.size(); boneNodeIndex++)
 			{
-				BoneInfo newBone = { fbxNodes[boneNodeIndex]->GetName(), boneNodeIndex, -1 };
+				std::string boneName = fbxNodes[boneNodeIndex]->GetName();
+
+				if (boneName.find("skeleton//") == 0)
+					continue;
+
+				BoneInfo newBone = { boneName , boneNodeIndex, -1 };
 
 				for (size_t boneParentIndex = 0; boneParentIndex < fbxNodes.size(); boneParentIndex++)
 				{
@@ -86,6 +180,7 @@ namespace wrapdll
 				bones.push_back(newBone);
 			}
 
+			return bones;
 		}
 
 	};

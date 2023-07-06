@@ -10,21 +10,20 @@ namespace CommonControls.ModelFiles.FBX
     {
         public static SceneContainer CreateSceneFromFBX(string fileName, PackFileService pfs, out string skeletonName)
         {
-            var newScene = new SceneContainer();
+            var newSceneContainer = new SceneContainer();
 
-            var fbxSceneLoader = FBXSeneLoaderServiceDLL.CreateSceneFBX(fileName);
+            var fbxSceneLoader = FBXSeneLoaderServiceDLL.CreateSceneFBX(fileName); 
+            FillBoneTable(fbxSceneLoader, out skeletonName, pfs); // have to send bone table before mesh processing
 
-            SetSkeletonBoneNames(pfs, fbxSceneLoader, out skeletonName);
-
-            var ptrNativeScene = FBXSeneLoaderServiceDLL.ProcessAndFillScene(fbxSceneLoader);
-            SceneMarshaller.ToManaged(ptrNativeScene, newScene);
+            var ptrNativeSceneContainer = FBXSeneLoaderServiceDLL.ProcessAndFillScene(fbxSceneLoader);
+            SceneMarshaller.ToManaged(ptrNativeSceneContainer, newSceneContainer);
 
             FBXSeneLoaderServiceDLL.DeleteBaseObj(fbxSceneLoader);
 
-            return newScene;
+            return newSceneContainer;
         }
 
-        private static void SetSkeletonBoneNames(PackFileService pfs, IntPtr fbxSceneLoader, out string outSkeletonName)
+        private static void FillBoneTable(IntPtr fbxSceneLoader, out string outSkeletonName, PackFileService pfs)
         {
             var skeletonNamePtr = FBXSeneLoaderServiceDLL.GetSkeletonNameFromScene(fbxSceneLoader);
 
@@ -66,13 +65,14 @@ namespace CommonControls.ModelFiles.FBX
     }
     public class SceneMarshaller
     {
-        public static void ToManaged(IntPtr ptrFbxSceneContainer, SceneContainer destScene)
+        public static void ToManaged(IntPtr ptrFbxSceneContainer, SceneContainer destSceneContainer)
         {
-            destScene.Meshes = GetAllPackedMeshes(ptrFbxSceneContainer);
+            destSceneContainer.Meshes = GetAllPackedMeshes(ptrFbxSceneContainer);
             /*
             destScene.Bones = GetAllBones();
-            destScene.Animations = GetAllBones();
-            
+            destScene.Animations = GetAllAnimations();
+            destScene.RootNode = GetNodeHierachy()
+            etc...
             */
         }
 
@@ -157,7 +157,6 @@ namespace CommonControls.ModelFiles.FBX
         }
 
     }
-
 
     // TODO: move to scene.cs
     public class FBXSCeneContainerDll

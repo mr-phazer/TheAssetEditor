@@ -4,7 +4,7 @@
 #include "..\Processing\FBXMeshProcessor.h"
 #include "..\Processing\FBXSkinProcessor.h"
 #include "..\Processing\FBXMeshCreator.h"
-
+#include "..\Helpers\Geometry\FBXBoneSorter.h"
 
 bool wrapdll::FBXImporterService::LoadFile(const std::string& path)
 {
@@ -22,7 +22,7 @@ wrapdll::FBXSCeneContainer* wrapdll::FBXImporterService::ProcessAndFillScene()
 	std::vector<fbxsdk::FbxMesh*> fbxMeshList;
 	FBXNodeSearcher::FindMeshesInScene(m_poFbxScene, fbxMeshList);
 
-	GetBonesFromsFbxScene();
+	auto boneInfoList = FBXBoneSorter::GetBonesFromsFbxScene(m_poFbxScene);
 
 	destPackedMeshes.clear();
 	destPackedMeshes.resize(fbxMeshList.size());
