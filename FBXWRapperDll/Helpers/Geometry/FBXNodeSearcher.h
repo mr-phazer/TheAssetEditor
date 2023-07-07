@@ -77,8 +77,6 @@ namespace wrapdll
 
 		static void FindFbxMeshesRecursive(fbxsdk::FbxNode* poParent, std::vector<fbxsdk::FbxMesh*>& fbxMeshes)
 		{
-			auto DEBUG_childCount = poParent->GetChildCount(); // TODO: REMOVE;
-
 			for (int childBoneIndex = 0; childBoneIndex < poParent->GetChildCount(); ++childBoneIndex)
 			{
 				fbxsdk::FbxNode* poChildItem = poParent->GetChild(childBoneIndex);
@@ -107,8 +105,6 @@ namespace wrapdll
 
 		static void FindFbxNodeByTypeRecursive(fbxsdk::FbxNodeAttribute::EType nodeType, fbxsdk::FbxNode* poParent, std::vector<fbxsdk::FbxNode*>& fbxMeshes)
 		{
-			auto DEBUG_childCount = poParent->GetChildCount(); // TODO: REMOVE;
-
 			for (int childBoneIndex = 0; childBoneIndex < poParent->GetChildCount(); ++childBoneIndex)
 			{
 				fbxsdk::FbxNode* poCurrentNode = poParent->GetChild(childBoneIndex);

@@ -77,7 +77,7 @@ namespace wrapdll
 			{
 				for (int faceCorner = 0; faceCorner < faceIndexCount; faceCorner++)
 				{
-					auto vertexIndex = (faceIndex * faceIndexCount) + faceCorner; // TODO: check if this can replace "vertex_index", and if so decide if it SHOULD
+					auto vertexIndex = (faceIndex * faceIndexCount) + faceCorner;
 					auto& destVertexRef = destMesh.vertices[vertexIndex];
 
 					// -- FBC "control point" = ("pure" math verrtex, position only),

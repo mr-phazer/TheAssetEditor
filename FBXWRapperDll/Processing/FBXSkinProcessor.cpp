@@ -1,12 +1,6 @@
 #include "FBXSkinProcessor.h"
 
 using namespace wrapdll;
-// TODO: make method that processes the skin and stores the influences per CONTROL POINT, before the vertex processing, so the weights can be fetched+set from "ProcessPolygon"
-// Do it for each mesh like:
-// - loop N
-// - Process Weights for MESH  N
-// - Process polygons for Mesh  N
-
 
 /// <summary>
 /// Processes FBXSkin, 
@@ -104,7 +98,7 @@ bool FBXSkinProcessorService::GetInfluencesFromSkin(
 
 		if (!pControlPointIndices || !pControlPointWeights)
 		{
-			log_action_error("NULL for bone weighted info!"); // TODO: make better message
+			log_action_error("NULL pointer for weight/indices"); 
 			continue;
 		}
 

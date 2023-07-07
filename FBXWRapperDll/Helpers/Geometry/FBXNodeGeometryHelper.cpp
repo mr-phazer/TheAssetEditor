@@ -39,9 +39,6 @@ FbxAMatrix FBXNodeGeometryHelper::GetNodeWorldTransform(FbxNode* pNode)
 
 	matrixL2W *= matrixGeo;
 
-	// todo remove debugging code
-	//matrixL2W.SetIdentity();
-
 	return matrixL2W;
 }
 

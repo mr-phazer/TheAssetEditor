@@ -11,7 +11,8 @@
 #include <d3d.h>
 #include <Vector>
 #include <memory>
-//#include <oaidl.h>
+
+#include "..\Base\BaseInteropObject.h"
 
 #include "../Logging/Logging.h"
 #include "../DataStructures/PackedMeshStructs.h"
@@ -20,17 +21,17 @@
 
 #include "..\DLLDefines.h"
 
-//FBXWRAPPERDLL_API
 namespace wrapdll
 {
-	class FBXSCeneContainer : public BaseObject
+	class FBXSCeneContainer : public BaseInteropObject
 	{
 	public:		
 		virtual ~FBXSCeneContainer()
 		{			
-			auto DEBUG_BREAK = 1; // TODO: remove 
+#ifdef _DEBUG
+			log_info("FBXSCeneContainer destroyed.");
+#endif // _DEBUG			
 		};
-
 
 		void GetVertices(int meshindex, PackedCommonVertex** ppVertices, int* itemCount)
 		{
@@ -53,6 +54,6 @@ namespace wrapdll
 	private:
 		std::vector<PackedMesh> m_packedMeshes;
 		std::vector<std::string> m_animFileBoneNames; // ordered as the .ANIM file, so can be used for bonename -> index lookups
-		fbxsdk::FbxScene* m_poFbxScene = nullptr;
+		fbxsdk::FbxScene* m_pFbxScene = nullptr;
 	};
 }

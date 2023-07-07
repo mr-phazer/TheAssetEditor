@@ -78,6 +78,9 @@
     <ClInclude Include="Processing\FBXMeshCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Base\BaseInteropObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

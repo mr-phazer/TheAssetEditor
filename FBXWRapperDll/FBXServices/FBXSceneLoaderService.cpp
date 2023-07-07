@@ -6,13 +6,19 @@
 #include "..\Processing\FBXMeshCreator.h"
 
 
-bool wrapdll::FBXImporterService::LoadFile(const std::string& path)
+wrapdll::FBXImporterService* wrapdll::FBXImporterService::CreateFromDiskFile(const std::string& path)
 {
-	m_poFbxScene = FBXHelperFileUtil::CreateScene(path);
-	if (!m_poFbxScene)
-		return log_action_error("Scene Loading Failed!!");
+	auto pInstance = new wrapdll::FBXImporterService();
+	pInstance->m_pSDKManager = FBXHelperFileUtil::InitializeSdkManager(); // for creation/cleanup
+	pInstance->m_pFbxScene = FBXHelperFileUtil::InitScene(pInstance->m_pSDKManager, path);
 
-	return true;
+	if (!pInstance->m_pFbxScene)
+	{
+		log_action_error("Scene Creation Failed!!");
+		return nullptr;
+	}
+
+	return pInstance;
 }
 
 wrapdll::FBXSCeneContainer* wrapdll::FBXImporterService::ProcessAndFillScene()
@@ -20,9 +26,7 @@ wrapdll::FBXSCeneContainer* wrapdll::FBXImporterService::ProcessAndFillScene()
 	auto& destPackedMeshes = m_sceneContainer.GetMeshes();
 
 	std::vector<fbxsdk::FbxMesh*> fbxMeshList;
-	FBXNodeSearcher::FindMeshesInScene(m_poFbxScene, fbxMeshList);
-
-	GetBonesFromsFbxScene();
+	FBXNodeSearcher::FindMeshesInScene(m_pFbxScene, fbxMeshList);	
 
 	destPackedMeshes.clear();
 	destPackedMeshes.resize(fbxMeshList.size());
@@ -30,13 +34,12 @@ wrapdll::FBXSCeneContainer* wrapdll::FBXImporterService::ProcessAndFillScene()
 	{
 		std::vector<ControlPointInfluences> vertexToControlPoint;
 		FBXSkinProcessorService::ProcessSkin(fbxMeshList[meshIndex], destPackedMeshes[meshIndex], m_animFileBoneNames, vertexToControlPoint);
-		FBXMeshCreator::MakeUnindexPackedMesh(m_poFbxScene, fbxMeshList[meshIndex], destPackedMeshes[meshIndex], vertexToControlPoint);
+		FBXMeshCreator::MakeUnindexPackedMesh(m_pFbxScene, fbxMeshList[meshIndex], destPackedMeshes[meshIndex], vertexToControlPoint);
 
 		log_action("Doing Tangents/Indexing");
 		FbxMeshProcessor::doTangentAndIndexing(destPackedMeshes[meshIndex]);
 		log_action("Done Tangents/Indexing");
-	}
-	auto DEBUG_BREAK = 1; // TODO: REMOVE!
+	}	
 
 	return &m_sceneContainer;
 }
@@ -44,11 +47,9 @@ wrapdll::FBXSCeneContainer* wrapdll::FBXImporterService::ProcessAndFillScene()
 extern "C"
 {
 	FBXWRAPPERDLL_API_EXT
-	wrapdll::FBXImporterService* CreateSceneFBX(char* path)
-	{
-		auto pInstance = new wrapdll::FBXImporterService();
-		pInstance->LoadFile(path);
-		return pInstance;
+	wrapdll::FBXImporterService* CreateSceneFBX(char* path)	{
+		
+		return wrapdll::FBXImporterService::CreateFromDiskFile(path);
 	};
 
 	FBXWRAPPERDLL_API_EXT
@@ -79,7 +80,7 @@ extern "C"
 	};
 
 	FBXWRAPPERDLL_API_EXT
-	void DeleteBaseObj(BaseObject* pInstance)
+	void DeleteBaseObj(wrapdll::BaseInteropObject* pInstance)
 	{
 		if (pInstance != nullptr)
 		{

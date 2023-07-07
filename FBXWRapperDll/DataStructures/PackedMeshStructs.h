@@ -4,12 +4,10 @@
 #include <vector>
 #include <string>
 
-//#include "..\DLLDefines.h"
-
 struct BoneAnimKey
 {
-	DirectX::XMFLOAT3 translation;
-	DirectX::XMFLOAT4 quaternion;
+	DirectX::XMFLOAT3 translation = { 0,0,0 };
+	DirectX::XMFLOAT4 quaternion = { 0,0,0,1 };
 	double timeStampe = 0.0;
 };
 
@@ -43,6 +41,3 @@ struct PackedMesh
 	std::vector<PackedCommonVertex> vertices;
 	std::vector<uint16_t> indices;
 };
-
-
-

@@ -979,6 +979,7 @@ namespace DirectX
     } // namespace SimpleMath
 } // namespace DirectX
 
+// -- added by Phazer: short hand namespace alias 
 namespace sm = DirectX::SimpleMath;
 
 //------------------------------------------------------------------------------

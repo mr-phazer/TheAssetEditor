@@ -166,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DLLDefines.h" />
+    <ClInclude Include="Base\BaseInteropObject.h" />
     <ClInclude Include="Processing\FBXMeshCreator.h" />
     <ClInclude Include="Processing\FBXVertexCreator.h" />
     <ClInclude Include="FBXServices\FBXSceneLoaderService.h" />
