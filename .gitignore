@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
 # User-specific files
 *.rsuser
 *.suo
@@ -26,6 +28,12 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+
+
+#  Fix issue where needed libs are not copied
+!*.lib
+
+
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -180,9 +188,6 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
-#  Fix issue where needed libs are not copied
-!*.lib
-!*.dll
 
 # NuGet Packages
 *.nupkg

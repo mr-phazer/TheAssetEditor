@@ -978,11 +978,11 @@
     </None>
     <None Include="ClassDiagram.cd" />
     <None Include="fbxsdk\dllbins\d\libfbxsdk.dll" />
-    <None Include="fbxsdk\dllbins\release\libfbxsdk.dll" />
-    <None Include="fbxsdk\dllbins\release\libfbxsdk.zip" />
+    <None Include="fbxsdk\dllbins\r\libfbxsdk.dll" />
+    <None Include="fbxsdk\dllbins\r\libfbxsdk.zip" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="fbxsdk\dllbins\d\libfbxsdk.lib" />
-    <Library Include="fbxsdk\dllbins\release\libfbxsdk.lib" />
+    <Library Include="fbxsdk\dllbins\r\libfbxsdk.lib" />
   </ItemGroup>
 </Project>
