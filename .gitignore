@@ -351,3 +351,4 @@ healthchecksdb
 !*.lib
 #!*/BXWRapperDll/fbxsdk/*.lib
 
+!*.dll
