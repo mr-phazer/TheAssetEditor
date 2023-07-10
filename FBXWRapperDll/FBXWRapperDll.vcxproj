@@ -162,9 +162,15 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="cpp.hint" />
-    <None Include="fbxsdk\dllbins\d\libfbxsdk.dll" />
-    <None Include="fbxsdk\dllbins\r\libfbxsdk.dll" />
-    <None Include="fbxsdk\dllbins\r\libfbxsdk.zip" />
+    <Text Include="fbxsdk\dllbins\d\libfbxsdk.dll">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="fbxsdk\dllbins\r\libfbxsdk.dll">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="fbxsdk\dllbins\r\libfbxsdk.zip">
+      <FileType>Document</FileType>
+    </Text>
     <None Include="Helpers\MS_SimpleMath\SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -484,8 +490,12 @@
     <ClCompile Include="Helpers\Geometry\FBXNodeGeometryHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="fbxsdk\dllbins\d\libfbxsdk.lib" />
-    <Library Include="fbxsdk\dllbins\r\libfbxsdk.lib" />
+    <Text Include="fbxsdk\dllbins\d\libfbxsdk.lib">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="fbxsdk\dllbins\r\libfbxsdk.lib">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -32,8 +32,9 @@ bld/
 
 #  Fix issue where needed libs are not copied
 
-FBXWRapperDll/*
-!FBXWRapperDll/
+
+*.lib
+!*.lib
 
 
 
