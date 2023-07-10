@@ -348,5 +348,6 @@ healthchecksdb
 
 
 #  Fix issue where needed libs are not copied
-!*/FBXWRapperDll/fbxsdk/*.lib
+!*.lib
+#!*/BXWRapperDll/fbxsdk/*.lib
 
