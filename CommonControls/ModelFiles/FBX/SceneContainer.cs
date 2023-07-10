@@ -8,7 +8,7 @@ namespace CommonControls.ModelFiles.FBX
 {
     public class SceneContainer
     {
-        public List<PackedMesh> Meshes { get; set; } = new List<PackedMesh>();
+        public List<Mesh.PackedMesh> Meshes { get; set; } = new List<Mesh.PackedMesh>();
         public List<BoneInfo> Bones { get; set; } = new List<BoneInfo>();
         public List<AnimationClip> Animations { get; set; } = new List<AnimationClip>();
         public Node? RootNode { get; set; }

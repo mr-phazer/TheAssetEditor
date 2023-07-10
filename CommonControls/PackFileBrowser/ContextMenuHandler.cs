@@ -18,6 +18,8 @@ using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using CommonControls.ModelFiles.FBX;
+using Assimp;
+using System.ComponentModel;
 
 namespace CommonControls.PackFileBrowser
 {
@@ -184,6 +186,7 @@ namespace CommonControls.PackFileBrowser
         }
 
         void OnImport3DModelCommand()        
+
         {       
 
             if (_selectedNode.FileOwner.IsCaPackFile)
@@ -200,13 +203,14 @@ namespace CommonControls.PackFileBrowser
             {                
                 var files = dialog.FileNames;
                 foreach (var file in files)
-                {                    
-                // TODO: renable exceptions handling
+                {
+                    // TODO: renable exceptions handling
                     //try
                     {
-                        
 
-                        MeshToRmv2FileHelper.Import3dModelDiskFileToPack(_packFileService, _selectedNode.FileOwner, parentPath, file);                                                 
+                        string outFileName = MeshFileHelper.GetOutFileName(file);
+                        MeshFileHelper.Import3dModelDiskFileToPack(_packFileService, _selectedNode.FileOwner, parentPath, file);
+                        MeshFileHelper.AddRmv2ToPackFIle(_packFileService, container, parentPath, outFileName, skeletonName, scene);
                     }
                     //catch (Exception e)
                     //{

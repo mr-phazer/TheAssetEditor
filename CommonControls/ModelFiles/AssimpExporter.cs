@@ -84,7 +84,7 @@ namespace CommonControls.ModelFiles
 
 
 
-        private static void MakeAssimpMeshBones(Mesh asMesh, MSkeleton asSkeleton)
+        private static void MakeAssimpMeshBones(Assimp.Mesh asMesh, MSkeleton asSkeleton)
         {
             // -- fills assimpt mesh bones with the needed info
             asMesh.Bones.AddRange(new Bone[asSkeleton.Bones.Length].ToList());
@@ -96,7 +96,7 @@ namespace CommonControls.ModelFiles
             }
         }
 
-        private static void CopyMeshVertexWeights(Mesh asMesh, RmvMesh rmv2Mesh)        
+        private static void CopyMeshVertexWeights(Assimp.Mesh asMesh, RmvMesh rmv2Mesh)        
         {                   
             for (int vertexIndex = 0; vertexIndex < rmv2Mesh.VertexList.Length; vertexIndex++)
             {

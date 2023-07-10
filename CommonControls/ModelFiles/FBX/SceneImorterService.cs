@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CommonControls.Services;
 using CommonControls.FileTypes.Animation;
+using CommonControls.ModelFiles.Mesh;
 
 namespace CommonControls.ModelFiles.FBX
 {

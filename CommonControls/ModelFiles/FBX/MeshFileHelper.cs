@@ -9,15 +9,18 @@ using System.Linq;
 using CommonControls.FileTypes.PackFiles.Models;
 using CommonControls.Services;
 using Microsoft.Xna.Framework;
+using CommonControls.ModelFiles.Mesh;
+using CommonControls.ModelFiles.Mesh.Native;
+using Assimp;
 
 namespace CommonControls.ModelFiles.FBX
 {
-    public class MeshToRmv2FileHelper
+    public class MeshFileHelper
     {
         /// <summary>
         /// Make Rmv2File from PackedMeshes and and skeleton name
         /// </summary>        
-        public static RmvFile MakeRMV2File(List<PackedMesh> packedMeshes, string skeletonName)
+        public static RmvFile MakeRMV2File(List<Mesh.PackedMesh> packedMeshes, string skeletonName)
         {
             int lodCount = 4; // make 4 idential LODs for compatibility reasons
 
@@ -74,7 +77,7 @@ namespace CommonControls.ModelFiles.FBX
 
             return outputFile;
         }
-        
+
         /// <summary>
         /// Imports an FBX/OBJ/etx model using the FBX SDK
         /// </summary>
@@ -83,15 +86,23 @@ namespace CommonControls.ModelFiles.FBX
         /// <param name="parentPackPath">Pack Folder</param>
         /// <param name="diskFilePath">Input model disk file</param>
         /// <param name="diskSkeletonFile">Optional skeleton file, use instead skeleton namm-scene-lookup</param>
-        public static void Import3dModelDiskFileToPack(PackFileService pfs, PackFileContainer container, string parentPackPath, string diskFilePath, string diskSkeletonFile = "")
+        public static SceneContainer Import3dModelDiskFileToPack(PackFileService pfs, PackFileContainer container, string parentPackPath, string diskFilePath, string diskSkeletonFile = "")
+        {           
+
+           string skeletonName = "";
+           return SceneImorterService.CreateSceneFromFBX(diskFilePath, pfs, out skeletonName);            
+        }
+
+        public static string GetOutFileName(string diskFilePath)
         {
             var fileNameNoExt = Path.GetFileNameWithoutExtension(diskFilePath);
             var outExtension = ".rigid_model_v2";
             var outFileName = fileNameNoExt + outExtension;
+            return outFileName;
+        }
 
-            string skeletonName = "";
-            var scene = SceneImorterService.CreateSceneFromFBX(diskFilePath, pfs, out skeletonName);
-            
+        public static void AddRmv2ToPackFIle(PackFileService pfs, PackFileContainer container, string parentPackPath, string outFileName, string skeletonName, SceneContainer scene)
+        {
             var rmv2File = MakeRMV2File(scene.Meshes, skeletonName); ;
             var factory = ModelFactory.Create();
             var buffer = factory.Save(rmv2File);
@@ -163,11 +174,11 @@ namespace CommonControls.ModelFiles.FBX
         /// Makes a packed vertex (vertex that contains pos+normal+uv+ect attribytes, as opposed the an actual "math vertex" that is just position)
         /// </summary>        
         private static CommonVertex MakePackedVertex(
-            XMFLOAT4 position,
-            XMFLOAT3 normal,
-            XMFLOAT2 textureCoords,
-            XMFLOAT3 tangent,
-            XMFLOAT3 bitangent,
+           Mesh.Native.XMFLOAT4 position,
+              Mesh.Native.XMFLOAT3 normal,
+              Mesh.Native.XMFLOAT2 textureCoords,
+              Mesh.Native.XMFLOAT3 tangent,
+              Mesh.Native.XMFLOAT3 bitangent,
             string skeletonName)
 
         {            
