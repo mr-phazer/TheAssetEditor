@@ -162,15 +162,6 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="cpp.hint" />
-    <Text Include="fbxsdk\dllbins\d\libfbxsdk.dll">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="fbxsdk\dllbins\r\libfbxsdk.dll">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="fbxsdk\dllbins\r\libfbxsdk.zip">
-      <FileType>Document</FileType>
-    </Text>
     <None Include="Helpers\MS_SimpleMath\SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -488,14 +479,6 @@
     <ClCompile Include="Logging\Logging.cpp" />
     <ClCompile Include="DataStructures\PackedMeshStructs.cpp" />
     <ClCompile Include="Helpers\Geometry\FBXNodeGeometryHelper.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="fbxsdk\dllbins\d\libfbxsdk.lib">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="fbxsdk\dllbins\r\libfbxsdk.lib">
-      <FileType>Document</FileType>
-    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

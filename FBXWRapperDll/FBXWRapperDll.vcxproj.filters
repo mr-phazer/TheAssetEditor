@@ -977,14 +977,5 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
-    <None Include="fbxsdk\dllbins\r\libfbxsdk.dll" />
-    <None Include="fbxsdk\dllbins\r\libfbxsdk.zip" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="fbxsdk\dllbins\r\libfbxsdk.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="fbxsdk\dllbins\d\libfbxsdk.dll" />
-    <Text Include="fbxsdk\dllbins\d\libfbxsdk.lib" />
   </ItemGroup>
 </Project>

@@ -30,11 +30,6 @@ bld/
 [Ll]og/
 
 
-#  Fix issue where needed libs are not copied
-
-
-*.lib
-!*.lib
 
 
 
@@ -350,3 +345,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+
+#  Fix issue where needed libs are not copied
+!FBXWRapperDll/*.lib
