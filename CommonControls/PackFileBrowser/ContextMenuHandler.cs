@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using CommonControls.Editors.ModelFiles.ImportSettings;
 
 
 namespace CommonControls.PackFileBrowser
@@ -145,6 +146,9 @@ namespace CommonControls.PackFileBrowser
                 MessageBox.Show("Unable to edit CA packfile");
                 return;
             }
+
+            var tester = new ImportSettings();
+            tester.ShowDialog();
 
             MessageBox.Show("Currently Unsupported");
             return;
