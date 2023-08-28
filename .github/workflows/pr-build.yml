@@ -1,14 +1,24 @@
+name: Tests
+
 on:
-    pull_request:
-        branches:
-            - master
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
 jobs:
-    build:
-        name: Build Application
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-dotnet@v3
-              with:
-                dotnet-version: '3.1.x'
-            - run: dotnet build
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '3.1.x'
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build
+        shell: pwsh
+        run: |
+          MSBuild.exe AssetEditor.sln
