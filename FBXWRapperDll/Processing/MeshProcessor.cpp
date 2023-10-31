@@ -1,5 +1,5 @@
 #include "MeshProcessor.h"
-
+#include "..\libs\meshopt\meshoptimizer.h"
 
 //TODO: use meshopt, and add VertexRemapper variant of their code, that takes "CommonPackedVertex*"
 // And processes the the tangents like in "DoMeshIndexingWithTangentSmoothing"
@@ -12,82 +12,92 @@ void wrapdll::MeshProcessor::DoFinalMeshProcessing(PackedMesh& mesh)
 {
     ComputeTangentBasisUnindexed(mesh.vertices);
     DoMeshIndexingWithTangentSmoothing(mesh);
+
+
+    DoTangentBasisAndIndexing(mesh);
 }
 
 void wrapdll::MeshProcessor::DoTangentBasisAndIndexing(PackedMesh& destMesh)
 {
     using namespace std;
     using namespace DirectX;
+    
+    
+    ComputeTangentBasisForUnindexedMeshWithRemp(/*vertexRemap, */destMesh.vertices);   
+    
+    //size_t index_count = destMesh.vertices.size() * 3;
+    //size_t unindexed_vertex_count = face_count * 3;
 
-    // -- input
-    vector<sm::Vector3> inVertices;
-    vector<sm::Vector2> inUVs;
-    vector<sm::Vector3> inNormals;
+    //"TODO"
+        //"TODO; , this is not reducing indexes meshes because, it is use the whole PackedCommonVertex"
+        //"only use pos, normal, uv", "need to make temp struct()" "" and fille it upt
 
-    vector<sm::Vector3> outVertices;
-    vector<sm::Vector2> outUVs;
-    vector<sm::Vector3> outNormals;
-    vector<sm::Vector3> outTangents;
-    vector<sm::Vector3> outBitangents;
+      //  struct SimpleVertex { sm::Vector3 pos, sm::Vector3 normal, sm::Vector2 uv };
 
-    vector<uint32_t> outIndices;
+    vector<uint32_t> vertexRemap(destMesh.vertices.size());
+    auto newVertexCount = meshopt_generateVertexRemap(
+        vertexRemap.data(),
+        &destMesh.indices[0],
+        destMesh.indices.size(),
+        destMesh.vertices.data(),
+        destMesh.vertices.size(),
+        sizeof(PackedCommonVertex));
 
-    for (auto& v : destMesh.vertices)  // fill the UN-INDEXED vertex data into vectors
-    {
-        inVertices.push_back({ v.position.x, v.position.y, v.position.z }); // init: input uses vector4 for position
-        inUVs.push_back(v.uv);
-        inNormals.push_back(v.normal);
-    };    
 
-    ComputeTangentBasisForUnindexedMesh(
-        // inputs
-        inVertices, inUVs, inNormals,
+    std::vector<uint32_t> indexRemap(newVertexCount);
+    meshopt_remapIndexBuffer(destMesh.indices.data(), NULL, destMesh.indices.size(), indexRemap.data());
 
-        // outputs	
-        outTangents, outBitangents
-    );
+    meshopt_remapVertexBuffer(destMesh.vertices.data(), destMesh.vertices.data(), destMesh.vertices.size(), sizeof(PackedCommonVertex), vertexRemap.data());
 
-    // do indexing  and average tangents
-    DoIndexingAndAverageTangents_Slow(
-        inVertices, inUVs, inNormals, outTangents, outBitangents,
-        outIndices,
-        outVertices,
-        outUVs,
-        outNormals,
-        outTangents,
-        outBitangents
-    );
+
 
     // -- fill the mesh with the proceessed data
-    destMesh.vertices.clear();
-    destMesh.vertices.resize(outVertices.size());
-
-    for (size_t i = 0; i < outVertices.size(); i++)
+    
+    for (auto& v : destMesh.vertices)
     {
-        auto& v = destMesh.vertices[i];
-        auto& v_src = destMesh.vertices[i];
-        v.position = XMFLOAT4(outVertices[i].x, outVertices[i].y, outVertices[i].z, 0);
+        v.position.w = 0;
 
-        outNormals[i].Normalize();
-        v.normal = outNormals[i];
+        
+        v.normal = sm::Vector3::Normalize(v.normal);
+        
 
-        outTangents[i].Normalize();
-        outBitangents[i].Normalize();
+        std::swap(v.tangent, v.bitangent);        
 
-        v.tangent = outTangents[i];
-        v.bitangent = outBitangents[i];
-
-        v.uv = outUVs[i];
+        v.tangent = sm::Vector3::Normalize(v.tangent);
+        v.bitangent = sm::Vector3::Normalize(v.bitangent);
     }
 
-    destMesh.indices = outIndices;
+
+
+    RemapVertexWeights<uint32_t, ~0u> (destMesh.vertexWeights, destMesh.vertexWeights, vertexRemap);
+
+    //for (size_t i = 0; i < destMesh.vertices.size(); i++)
+    //{
+    //    auto& v = destMesh.vertices[i];
+    //    auto& v_src = destMesh.vertices[i];
+    //    v.position = XMFLOAT4(outVertices[i].x, outVertices[i].y, outVertices[i].z, 0);
+
+    //    outNormals[i].Normalize();
+    //    v.normal = outNormals[i];
+
+    //    outTangents[i].Normalize();
+    //    outBitangents[i].Normalize();
+
+    //    v.tangent = outTangents[i];
+    //    v.bitangent = outBitangents[i];
+
+    //    v.uv = outUVs[i];
+    //}
+
+    //destMesh.indices = outIndices;
 }
 
-void wrapdll::MeshProcessor::RemapVertexWeights(const std::vector<VertexWeight>& inVertexWeights, std::vector<VertexWeight>& outVertexWeights, const std::vector<int>& outVertexIndexRemap)
+template <typename T, T discard_value>
+void wrapdll::MeshProcessor::RemapVertexWeights(const std::vector<VertexWeight>& inVertexWeights, std::vector<VertexWeight>& outVertexWeights, const std::vector<T>& outVertexIndexRemap)
 {
     for (size_t i = 0; i < inVertexWeights.size(); i++) // run through all old vertexweights
     {
-        if (outVertexIndexRemap[inVertexWeights[i].vertexIndex] != VERTEX_DISCARDED)
+        if (outVertexIndexRemap[inVertexWeights[i].vertexIndex] != discard_value)
         {
             auto tempVertexWeight = inVertexWeights[i];
 

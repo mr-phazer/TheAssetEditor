@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <SimpleMath.h>
 
 // This work is based on:
 // John McDonald, Mark Kilgard. Crack-Free Point-Normal Triangles using Adjacent Edge Normals. 2010
@@ -215,6 +216,8 @@ static void remapVertices_and_smoothTBN(void* destination, const void* vertices,
 
 } // namespace meshopt
 
+
+
 size_t meshopt_generateVertexRemap(unsigned int* destination, const unsigned int* indices, size_t index_count, const void* vertices, size_t vertex_count, size_t vertex_size)
 {
 	using namespace meshopt;
@@ -264,6 +267,58 @@ size_t meshopt_generateVertexRemap(unsigned int* destination, const unsigned int
 	return next_vertex;
 }
 
+
+size_t meshopt_generateVertexRemapTBN(unsigned int* destination, const unsigned int* indices, size_t index_count, PackedCommonVertex* vertices, size_t vertex_count, size_t vertex_size)
+{
+	using namespace meshopt;
+
+	assert(indices || index_count == vertex_count);
+	assert(!indices || index_count % 3 == 0);
+	assert(vertex_size > 0 && vertex_size <= 256);
+
+	meshopt_Allocator allocator;
+
+	memset(destination, -1, vertex_count * sizeof(unsigned int));
+
+	VertexHasher hasher = { static_cast<const unsigned char*>((const void*)vertices), vertex_size, vertex_size };
+
+	size_t table_size = hashBuckets(vertex_count);
+	unsigned int* table = allocator.allocate<unsigned int>(table_size);
+	memset(table, -1, table_size * sizeof(unsigned int));
+
+	unsigned int next_vertex = 0;
+
+	for (size_t i = 0; i < index_count; ++i)
+	{
+		unsigned int index = indices ? indices[i] : unsigned(i);
+		assert(index < vertex_count);
+
+		if (destination[index] == ~0u)
+		{
+			unsigned int* entry = hashLookup(table, table_size, hasher, index, ~0u);
+
+			if (*entry == ~0u)
+			{
+				*entry = index;
+				destination[index] = next_vertex++;
+			}
+			else
+			{
+				assert(destination[*entry] != ~0u);
+
+				destination[index] = destination[*entry];
+
+				vertices[index].tangent = sm::Vector3(vertices[index].tangent) + sm::Vector3(vertices[*entry].tangent);
+				vertices[index].bitangent = sm::Vector3(vertices[index].bitangent) + sm::Vector3(vertices[*entry].bitangent);
+
+			}
+		}
+	}
+
+	assert(next_vertex <= vertex_count);
+
+	return next_vertex;
+}
 
 size_t meshopt_generateVertexRemapMulti(unsigned int* destination, const unsigned int* indices, size_t index_count, size_t vertex_count, const struct meshopt_Stream* streams, size_t stream_count)
 {
@@ -630,3 +685,9 @@ void meshopt_generateTessellationIndexBuffer(unsigned int* destination, const un
 		memcpy(destination + i * 4, patch, sizeof(patch));
 	}
 }
+
+
+
+
+
+

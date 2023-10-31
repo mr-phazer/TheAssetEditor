@@ -1,5 +1,4 @@
 ﻿using CommonControls.Common.MenuSystem;
-using CommonControls.Events.UiCommands;
 using CommonControls.Services;
 using KitbasherEditor.ViewModels.MenuBarViews;
 using KitbasherEditor.ViewModels.MeshFitter;
@@ -20,7 +19,7 @@ namespace KitbasherEditor.ViewModels.UiCommands
         SelectionManager _selectionManager;
         private readonly CommandFactory _commandFactory;
         SkeletonAnimationLookUpHelper _skeletonHelper;
-        PackFileService _packFileService;
+        PackFileService _packFileService;       
 
         public OpenSkeletonReshaperToolCommand(ComponentManagerResolver componentManagerResolver, SelectionManager selectionManager, CommandFactory commandFactory, SkeletonAnimationLookUpHelper skeletonHelper, PackFileService packFileService)
         {

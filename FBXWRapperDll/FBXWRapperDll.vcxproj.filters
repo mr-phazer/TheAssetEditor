@@ -117,10 +117,13 @@
     <ClInclude Include="FBXServices\SceneExporter\FBXSceneExporterService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\meshopt\meshoptimizer.h">
+    <ClInclude Include="FbxObjectCreators\FbxMaterialCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FbxObjectCreators\FbxMaterialCreator.h">
+    <ClInclude Include="Processing\MeshProcessingHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\meshopt\meshoptimizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -188,52 +191,55 @@
     <ClCompile Include="FBXServices\SceneExporter\FBXSceneExporterService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\spatialorder.cpp">
+    <ClCompile Include="FbxObjectCreators\FbxMaterialCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\simplifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\meshopt\quantization.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\meshopt\overdrawoptimizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\meshopt\overdrawanalyzer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\meshopt\indexgenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\meshopt\indexcodec.cpp">
+    <ClCompile Include="Processing\MeshProcessingHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\meshopt\clusterizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\vfetchoptimizer.cpp">
+    <ClCompile Include="libs\meshopt\indexcodec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\vfetchanalyzer.cpp">
+    <ClCompile Include="libs\meshopt\indexgenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\vertexfilter.cpp">
+    <ClCompile Include="libs\meshopt\overdrawanalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\vertexcodec.cpp">
+    <ClCompile Include="libs\meshopt\overdrawoptimizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\vcacheoptimizer.cpp">
+    <ClCompile Include="libs\meshopt\quantization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\meshopt\vcacheanalyzer.cpp">
+    <ClCompile Include="libs\meshopt\simplifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\meshopt\spatialorder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\meshopt\stripifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FbxObjectCreators\FbxMaterialCreator.cpp">
+    <ClCompile Include="libs\meshopt\vcacheanalyzer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\meshopt\vcacheoptimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\meshopt\vertexcodec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\meshopt\vertexfilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\meshopt\vfetchanalyzer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\meshopt\vfetchoptimizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

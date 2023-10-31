@@ -18,16 +18,17 @@ namespace AssetManagement.Strategies.Fbx.ImportDialog.ViewModels
             _inputFbxSettings = inputFbxSettings;
         }
 
-        public string ExportPath
+        public string ExportPath()
         {
-            ExportInfoPanel()
+            //ExportInfoPanel()
 
-            get { return _inputFbxSettings.FileInfoData.FileName; }
-            set
-            {
-                _inputFbxSettings.FileInfoData.FileName  = value;
-                NotifyPropertyChanged(nameof(ExportPath));
-            }
+            //get { return _inputFbxSettings.FileInfoData.FileName; }
+            //set
+            //{
+            //    _inputFbxSettings.FileInfoData.FileName  = value;
+            //    NotifyPropertyChanged(nameof(ExportPath));
+            //}
+            return "";
         }
 
         public ICommand ExportCommand { get; set; }

@@ -1,20 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+//using Simplygon; TODO: make work again
 using System;
 using View3D.Components.Input;
 
 namespace View3D.Components.Rendering
 {
-
-
-    public class ArcBallCamera : BaseComponent, IDisposable
+    public class CameraExtended : BaseComponent, IDisposable
     {
         GraphicsDevice _graphicsDevice;
         MouseComponent _mouse;
         KeyboardComponent _keyboard;
 
-        public ArcBallCamera(DeviceResolverComponent deviceResolverComponent, KeyboardComponent keyboardComponent, MouseComponent mouseComponent)
+        public CameraExtended(DeviceResolverComponent deviceResolverComponent, KeyboardComponent keyboardComponent, MouseComponent mouseComponent)
         {
             Zoom = 10;
             Yaw = 0.8f;
@@ -36,8 +35,46 @@ namespace View3D.Components.Rendering
         /// Recreates our view matrix, then signals that the view matrix
         /// is clean.
         /// </summary>
+        private void ReCreateViewMatrixWithTrigonoMetry()
+        {
+
+
+//            /*
+//               x = rsin θ cos φ
+//               y = rsin θ sin φ
+//               z = rcos θ
+//              */
+
+//            float offset = 0.0f;
+//            float y = -Yaw;
+//            float p = Pitch;
+
+//            var r = _zoom;
+////            var eye = ref Position;
+
+//            /*geometryData.v3EyePosition.z = r * sin(p) * cos(y);
+//            geometryData.v3EyePosition.x = r * sin(p) * sin(y);	
+//            geometryData.v3EyePosition.y = r * cos(p); 
+//            */
+
+//            //geometryData.v3EyePosition += geometryData.v3LookAt;
+
+
+
+//            Position = new Vector3()
+//            { 
+//            Position.X = (float)(r * Math.Cos(p) * Math.Cos(y));
+//            Position.Y = (float)(r * Math.Sin(p));
+//            Position.Z = (float)(r * Math.Cos(p) * Math.Sin(y);
+
+//            Position +=     _lookAt;
+        }
+
+
+
         private void ReCreateViewMatrix()
         {
+
             //Calculate the relative position of the camera                        
             position = Vector3.Transform(Vector3.Backward, Matrix.CreateFromYawPitchRoll(yaw, pitch, 0));
             //Convert the relative position to the absolute position
@@ -48,28 +85,6 @@ namespace View3D.Components.Rendering
             viewMatrix = Matrix.CreateLookAt(position, _lookAt, Vector3.Up);
             viewMatrixDirty = false;
         }
-
-        /// <summary>
-        /// Recreates our view matrix, then signals that the view matrix        
-        /// is clean.
-        /// </summary>
-        private void ReCreateViewMatrixUsingTrigonemtry()
-        {
-
-            position = new Vector3()
-            {
-                X = (float)(_zoom * Math.Cos(pitch) * Math.Cos(yaw)),
-                Y = (float)(_zoom * Math.Sin(pitch) * Math.Sin(yaw)),
-                Z = (float)(_zoom * Math.Cos(pitch)),
-            };
-
-            position += _lookAt;
-
-
-            viewMatrix = Matrix.CreateLookAt(position, _lookAt, Vector3.Up);
-            viewMatrixDirty = false;
-        }
-
 
 
         #region HelperMethods
@@ -126,6 +141,7 @@ namespace View3D.Components.Rendering
                 pitch = MathHelper.Clamp(value, MinPitch, MaxPitch);
             }
         }
+
         private float yaw;
         public float Yaw
         {
@@ -136,7 +152,6 @@ namespace View3D.Components.Rendering
                 yaw = value;
             }
         }
-
 
         public static float MinZoom = 0.01f;
         public static float MaxZoom = float.MaxValue;
@@ -163,9 +178,10 @@ namespace View3D.Components.Rendering
                 }
                 return position;
             }
+
             set
             {
-                position = value;
+                Position = value;
             }
         }
 

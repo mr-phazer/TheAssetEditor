@@ -83,17 +83,22 @@ bool FBXSkinProcessorService::GetInfluencesFromSkin(
             int controlPointIndex = pControlPointIndices[influenceIndex];
 
             // get weight associated with vertex
-            double boneWeight = pControlPointWeights[influenceIndex];
+            double boneWeight = static_cast<float>(pControlPointWeights[influenceIndex]);            
 
             controlPointInfluences[controlPointIndex].weightCount++;
             auto currentWeightIndex = controlPointInfluences[controlPointIndex].weightCount;
 
             // set info, associated with the control point, that the MeshCreator can use to assign weighting to all vertices
-            CopyToFixedString(controlPointInfluences[controlPointIndex].influences[currentWeightIndex - 1].boneName, boneName);
-            controlPointInfluences[controlPointIndex].influences[currentWeightIndex - 1].boneIndex = clusterIndex;
-            controlPointInfluences[controlPointIndex].influences[currentWeightIndex - 1].weight = static_cast<float>(boneWeight);
+             FillVertexInfluence(controlPointInfluences[controlPointIndex].influences[currentWeightIndex], boneName, clusterIndex, boneWeight);
         };
     }
 
     return true;
+}
+
+void wrapdll::FBXSkinProcessorService::FillVertexInfluence(VertexInfluence& influence, std::string& boneName, int clusterIndex, double boneWeight)
+{
+    CopyToFixedString(influence.boneName, boneName);
+    influence.boneIndex = clusterIndex;
+    influence.weight = static_cast<float>(boneWeight);    
 }

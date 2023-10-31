@@ -32,6 +32,8 @@ namespace wrapdll
 			fbxsdk::FbxSkin* poSkin,
 			fbxsdk::FbxMesh* poFbxMeshNode,
 			std::vector<ControlPointInfluence>& controlPointInfluences);
+        
+        static void FillVertexInfluence(VertexInfluence& controlPointInfluences, std::string& boneName, int clusterIndex, double boneWeight);
 	};
 
 }

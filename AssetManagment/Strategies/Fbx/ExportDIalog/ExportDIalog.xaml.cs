@@ -4,7 +4,7 @@
 
 
 using System.Windows;
-using AssetManagement.Strategies.Fbx.ExportDIalog.UserControls;
+//using AssetManagement.Strategies.Fbx.ExportDIalog.UserControls;
 
 namespace AssetManagement.Strategies.Fbx.ExportDIalog
 {
@@ -15,9 +15,9 @@ namespace AssetManagement.Strategies.Fbx.ExportDIalog
     {
         public ExportDIalog()
         {
-            var newPanel = new ExportPanelUserControl();
-            AddChild(newPanel);
-            AddChild(newPanel);
+  //          var newPanel = new ExportPanelUserControl();
+    //        AddChild(newPanel);
+    //        AddChild(newPanel);
 
             InitializeComponent();
         }

@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include "..\..\DataStructures\PackedMeshStructs.h"
 
 /* Version macro; major * 1000 + minor * 10 + patch */
 #define MESHOPTIMIZER_VERSION 190 /* 0.19 */
@@ -46,6 +47,9 @@ struct meshopt_Stream
 	size_t size;
 	size_t stride;
 };
+
+
+size_t meshopt_generateVertexRemapTBN(unsigned int* destination, const unsigned int* indices, size_t index_count, PackedCommonVertex* vertices, size_t vertex_count, size_t vertex_size);
 
 /**
  * Generates a vertex remap table from the vertex buffer and an optional index buffer and returns number of unique vertices

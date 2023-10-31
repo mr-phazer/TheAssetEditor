@@ -16,7 +16,7 @@
 #include <string.h> 
 #include <string> 
 
-#include <SimpleMath.h>
+
 #include "..\Logging\Logging.h"
 #include "..\DataStructures\PackedMeshStructs.h"
 #include "..\HelperUtils\VectorConverter.h"
@@ -24,16 +24,17 @@
 namespace wrapdll
 {
     class MeshProcessor
-    {     
+    {
     private:
         static constexpr int VERTEX_DISCARDED = -1;
 
-    public: 
+    public:
         static void DoFinalMeshProcessing(PackedMesh& mesh);
 
         static void DoTangentBasisAndIndexing(PackedMesh& destMesh);
 
-        static void RemapVertexWeights(const std::vector<VertexWeight>& inVertexWeights, std::vector<VertexWeight>& outVertexWeights, const std::vector<int>& outVertexIndexRemap);
+        template <typename T, T discard_value>
+        static void RemapVertexWeights(const std::vector<VertexWeight>& inVertexWeights, std::vector<VertexWeight>& outVertexWeights, const std::vector<T>& outVertexIndexRemap);
         // TODO: make make the result the RETURN VALUE, and the input "srcMesh"?
         static void DoMeshIndexingWithTangentSmoothing(PackedMesh& destMesh)
         {
@@ -46,7 +47,7 @@ namespace wrapdll
             DoMeshIndexingWithTangenSmoothing_OutPutRemap_Fast(destMesh.vertices, outVertices, outIndices, outVertexIndexRemap);
 
             std::vector<VertexWeight> outVertexWeights;
-            RemapVertexWeights(destMesh.vertexWeights, outVertexWeights, outVertexIndexRemap);
+            RemapVertexWeights<int, -1>(destMesh.vertexWeights, outVertexWeights, outVertexIndexRemap);
 
             destMesh.vertices = outVertices;
             destMesh.indices = outIndices;
@@ -67,8 +68,9 @@ namespace wrapdll
 
                 if (!bThereIsAWeight)
                 {
-                    auto DEBUG_BREAK = 1;
-                    LogActionError("Invalid Vertex Weights for mesh: " + destMesh.meshName + "a vertex has not weight");
+                    // TODO: check if the mesh is mean to have skin, then this is an error.
+                    //auto DEBUG_BREAK = 1;
+                    //LogActionError("Invalid Vertex Weights for mesh: " + destMesh.meshName + "a vertex has no weight");
                 }
             }
         }
@@ -77,7 +79,6 @@ namespace wrapdll
             // inputs
             const std::vector<sm::Vector3>& vertices,
             const std::vector<sm::Vector2>& uvs,
-            const std::vector<sm::Vector3>& normals,
             // outputs
             std::vector<sm::Vector3>& tangents,
             std::vector<sm::Vector3>& bitangents)
@@ -118,7 +119,54 @@ namespace wrapdll
             return;
         };
 
-        // TODO: CLEAN UP
+        static void ComputeTangentBasisForUnindexedMeshWithRemp(            
+            ////*in*/ const std::vector<uint32_t>& vertexRemap,
+            /*in out*/ std::vector<PackedCommonVertex>& vertices)
+        {
+            const uint32_t discardedVertexFlag = ~0u;
+
+            for (unsigned int vertexInxdex = 0; vertexInxdex < vertices.size(); vertexInxdex += 3) {
+
+                //if (vertexRemap[vertexInxdex] == discardedVertexFlag) // marked as to discarded
+                //{
+                //    continue;
+                //}
+                // Shortcuts for vertices
+                const sm::Vector3 v0 = vertices[vertexInxdex + 0].position;
+                const sm::Vector3 v1 = vertices[vertexInxdex + 1].position;
+                const sm::Vector3 v2 = vertices[vertexInxdex + 2].position;
+
+                // Shortcuts for UVs
+                const sm::Vector2 uv0 = vertices[vertexInxdex + 0].uv;
+                const sm::Vector2 uv1 = vertices[vertexInxdex + 1].uv;
+                const sm::Vector2 uv2 = vertices[vertexInxdex + 2].uv;
+
+                // Edges of the triangle : postion delta
+                sm::Vector3 deltaPos1 = v1 - v0;
+                sm::Vector3 deltaPos2 = v2 - v0;
+
+                // UV delta
+                sm::Vector2 deltaUV1 = uv1 - uv0;
+                sm::Vector2 deltaUV2 = uv2 - uv0;
+
+                float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+                sm::Vector3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+                sm::Vector3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;              
+                                
+                DirectX::XMFLOAT3* pTangent = (&tangent);
+                vertices[vertexInxdex + 0].tangent = *pTangent;
+                vertices[vertexInxdex + 1].tangent = *pTangent;
+                vertices[vertexInxdex + 2].tangent = *pTangent;
+
+                DirectX::XMFLOAT3* pBitangent = (&bitangent);
+                vertices[vertexInxdex + 0].bitangent = *pBitangent;
+                vertices[vertexInxdex + 1].bitangent = *pBitangent;
+                vertices[vertexInxdex + 2].bitangent = *pBitangent;
+
+            }            
+        };
+
+        
         static void ComputeTangentBasisUnindexed(std::vector<PackedCommonVertex>& vertices)
         {
             for (size_t i = 0; i < vertices.size(); i += 3)
@@ -204,13 +252,13 @@ namespace wrapdll
             const std::vector<sm::Vector3>& inTangents,
             const std::vector<sm::Vector3>& inBitangents,
 
-            
+
             std::vector<uint32_t>& outIndices,
             std::vector<sm::Vector3>& outVertices,
             std::vector<sm::Vector2>& outUVs,
             std::vector<sm::Vector3>& outNormals,
             std::vector<sm::Vector3>& outTangents,
-           std::vector<sm::Vector3>& outBitangents
+            std::vector<sm::Vector3>& outBitangents
         ) {
             //std::map<ExtPackedCommonVertex, unsigned short> VertexToOutIndex;
 
@@ -233,7 +281,7 @@ namespace wrapdll
 
                     // Average the tangents and the bitangents, for "smoothing"
                     outTangents[index] += inTangents[i];
-                    outBitangents[index] += inBitangents[i];                    
+                    outBitangents[index] += inBitangents[i];
                 }
                 else { // If not, it needs to be added in the output data.
                     outVertices.push_back(inVertices[i]);
@@ -241,10 +289,10 @@ namespace wrapdll
                     outNormals.push_back(inNormals[i]);
                     outTangents.push_back(inTangents[i]);
                     outBitangents.push_back(inBitangents[i]);
-                 
+
                     uint32_t newindex = (uint32_t)outVertices.size() - 1;
 
-                    outIndices.push_back(newindex);                    
+                    outIndices.push_back(newindex);
                 }
             }
         }
@@ -308,15 +356,15 @@ namespace wrapdll
             outVertexRemap.clear(); // can never be too sure?:)        
             std::map<PackedVertex, uint32_t> VertexToOutIndex;
             // For each input vertex
-            for (unsigned int inVertexIndex = 0; inVertexIndex < inVertices.size(); inVertexIndex++) 
+            for (unsigned int inVertexIndex = 0; inVertexIndex < inVertices.size(); inVertexIndex++)
             {
                 PackedVertex packedVertex;
                 packedVertex.position = convert::ConvertToVec3(inVertices[inVertexIndex].position);
                 packedVertex.uv = inVertices[inVertexIndex].uv;
                 packedVertex.normal = inVertices[inVertexIndex].normal;
-                
-                uint32_t indexToMatchingVertex;                
-                bool found = GetSimilarVertexIndex_Fast(packedVertex, VertexToOutIndex, indexToMatchingVertex);                
+
+                uint32_t indexToMatchingVertex;
+                bool found = GetSimilarVertexIndex_Fast(packedVertex, VertexToOutIndex, indexToMatchingVertex);
 
                 bool matchingVertexFound = GetSimilarPackedVertexIndex_Slow(convert::ConvertToVec3(inVertices[inVertexIndex].position), inVertices[inVertexIndex].uv, inVertices[inVertexIndex].normal, outVertices, indexToMatchingVertex);
 
@@ -532,8 +580,8 @@ namespace wrapdll
             //{
             //    return memcmp((void*)this, (void*)&that, sizeof(PackedVertex)) > 0;
             //};
-        
-        
+
+
         };
     };
 };

@@ -4,7 +4,7 @@
         <TargetFramework>net6.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
         <ApplicationIcon>hnet.com-image (1).ico</ApplicationIcon>
-        <AssemblyName>AssetEditor45-PhazerEdition</AssemblyName>
+        <AssemblyName>AssEd45-PhazerEdition</AssemblyName>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
     </PropertyGroup>

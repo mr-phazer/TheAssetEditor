@@ -190,6 +190,7 @@
     <ClInclude Include="libs\fbxsdk\common\Common.h" />
     <ClInclude Include="libs\fbxsdk\common\GeometryUtility.h" />
     <ClInclude Include="libs\meshopt\meshoptimizer.h" />
+    <ClInclude Include="Processing\MeshProcessingHelpers.h" />
     <ClInclude Include="Processing\PackedMeshCreator.h" />
     <ClInclude Include="Processing\PackedVertexCreator.h" />
     <ClInclude Include="Services\FBXSceneLoaderService.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="libs\meshopt\vertexfilter.cpp" />
     <ClCompile Include="libs\meshopt\vfetchanalyzer.cpp" />
     <ClCompile Include="libs\meshopt\vfetchoptimizer.cpp" />
+    <ClCompile Include="Processing\MeshProcessingHelpers.cpp" />
     <ClCompile Include="Processing\PackedMeshCreator.cpp" />
     <ClCompile Include="Processing\PackVertexCreator.cpp" />
     <ClCompile Include="HelperUtils\Geometry\FBXMeshGeometryHelper.cpp" />

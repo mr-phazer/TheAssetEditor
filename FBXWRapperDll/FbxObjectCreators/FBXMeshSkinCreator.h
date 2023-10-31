@@ -42,8 +42,8 @@ namespace wrapdll
                 return false;
             }
 
-            auto& bones = sceneContainer.GetBones();
             auto& boneNodes = sceneContainer.GetFbxBoneNodes();
+            auto& bones = sceneContainer.GetBones();
             auto poMesh = pFbxNodeMesh->GetMesh();
 
             std::vector<fbxsdk::FbxCluster*> meshClusters;
@@ -67,9 +67,6 @@ namespace wrapdll
 
             return true;
         }
-
-
-
 
 
 
