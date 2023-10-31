@@ -89,7 +89,7 @@ bool FBXSkinProcessorService::GetInfluencesFromSkin(
             auto currentWeightIndex = controlPointInfluences[controlPointIndex].weightCount;
 
             // set info, associated with the control point, that the MeshCreator can use to assign weighting to all vertices
-             FillVertexInfluence(controlPointInfluences[controlPointIndex].influences[currentWeightIndex], boneName, clusterIndex, boneWeight);
+            FillVertexInfluence(controlPointInfluences[controlPointIndex].influences[currentWeightIndex], boneName, clusterIndex, boneWeight);
         };
     }
 
