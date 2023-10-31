@@ -40,15 +40,15 @@ wrapdll::SceneContainer* wrapdll::FBXImporterService::ProcessAndFillScene()
     destPackedMeshes.resize(fbxMeshList.size());
     for (size_t meshIndex = 0; meshIndex < fbxMeshList.size(); meshIndex++)
     {
+        LogActionColor("Reading Fbx Skin.");
         std::vector<ControlPointInfluence> vertexToControlPoint;
         FBXSkinProcessorService::ProcessSkin(fbxMeshList[meshIndex], vertexToControlPoint);
 
+        LogActionColor("Making Meshes from FbxMeshes.");
         PackedMeshCreator::MakeUnindexedPackedMesh(m_pFbxScene, fbxMeshList[meshIndex], destPackedMeshes[meshIndex], vertexToControlPoint);
 
-        tools::SystemClock tangentsClock;        
-        LogActionColor("Doing Tangents/Indexing");
-        MeshProcessor::DoFinalMeshProcessing(destPackedMeshes[meshIndex]);        
-        LogActionColor("Done Tangents/Indexing. Time: " + std::to_string(tangentsClock.GetLocalTime()) + " seconds.");
+        LogActionColor("Doing Tangents/Indexing.");
+        MeshProcessor::DoFinalMeshProcessing(destPackedMeshes[meshIndex]);                
     }
 
     LogActionColor("Scene Loading Done. ");

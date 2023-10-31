@@ -37,7 +37,7 @@ namespace wrapdll
         virtual ~SceneContainer()
         {
 #ifdef _DEBUG
-            LogInfo("FBXSCeneContainer destroyed.");
+            LogInfo("FBXSCeneContainer deallocated.");
 #endif // _DEBUG			
         };
 

@@ -141,9 +141,9 @@ public:
 
     void PrintDone(const std::string& _strMsg = "")
     {
-        auto messageToShow = _strMsg.empty() ? m_message + ": Done." : _strMsg;
-        ImplLog::LogSimpleWithColor(prefix +  messageToShow, BG_BLACK | FG_WHITE);
-        auto timeElapsedMessageString = "Time Elapsed: " + std::to_string(m_clock.GetLocalTime()) + " seconds\n";
+        //auto messageToShow = _strMsg.empty() ? m_message + ": Done." : _strMsg;
+        //ImplLog::LogSimpleWithColor(prefix +  messageToShow, BG_BLACK | FG_WHITE);
+        auto timeElapsedMessageString = "\nDone. Time Elapsed: " + std::to_string(m_clock.GetLocalTime()) + " seconds\n";
 
         ImplLog::LogSimpleWithColor(timeElapsedMessageString, BG_BLACK | FG_GREEN);
     };

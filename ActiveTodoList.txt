@@ -1,3 +1,6 @@
+PHAZER: User cannot save files opened in text/xml views. Cliking the save icon gives errors "can't save this file type" (paraphrasing)
+
+
 PHAZER: Add support for decalling: (used for random bump, shield patterns, dirt, etc)
     [For Older Games]
     - Let the user switch to the desired decal RigigMaterial
