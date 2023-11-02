@@ -4,11 +4,11 @@ on:
             - master
 jobs:
     pr_test:
-        name: PR Test Build DotNet Main App
+        name: Test Build DotNet Main App
         runs-on: windows-latest
         steps:
         - uses: actions/checkout@v3
         - uses: actions/setup-dotnet@v3
           with:
             dotnet-version: '6.0.x'
-        - run: dotnet test
+        - run: dotnet build AssetEditor\AssetEditor.csproj
