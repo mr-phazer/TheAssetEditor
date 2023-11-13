@@ -1,9 +1,9 @@
 name: Compile Solution
 
 on:
-    pull_request:
+    push:
         branches:
-            - master
+            - Fbx-test
 
 jobs:
   windows_cpp_dll:
