@@ -80,6 +80,7 @@ namespace AssetManagement.AssetBuilders
         }
     }
 
+    // TODO: clean up, use DI instead of static, figure out best=most neat solution
     public class MeshWeightingCreator  
     {            
         public static void AddWeighting(List<PackedMesh> inoutMeshes, RmvFile rmv2File, AnimationFile skeletonFie)
@@ -98,10 +99,8 @@ namespace AssetManagement.AssetBuilders
             var weightcreator = new VertexWeightCreator(inModel, skeletonFile);
             outMesh.VertexWeights = weightcreator.CreateVertexWeigts();
         }
-
     }
-
-
+    // TODO: clean up, use DI instead of static, figure out best=most neat solution
     public class PackedMeshBuilderFactory
     {
         public static IPackedMeshBuilder GetBuilder(AnimationFile skeletonFile)
