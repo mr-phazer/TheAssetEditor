@@ -4,10 +4,10 @@
 
 
 using System.Collections.Generic;
+using AssetManagement.Geometry.DataStructures.Unmanaged;
 using CommonControls.FileTypes.Animation;
 using CommonControls.FileTypes.RigidModel.Vertex;
 using CommonControls.FileTypes.RigidModel;
-using AssetManagement.GenericFormats.DataStructures.Unmanaged;
 using AssetManagement.AnimationProcessor;
 
 namespace AssetManagement.AssetBuilders
@@ -20,7 +20,7 @@ namespace AssetManagement.AssetBuilders
     {
         private readonly AnimationFile _skeletonFile;
         private readonly RmvModel _inModel;
-        private readonly List<ExtVertexWeight> _vertexTempVertexWeights = new List<ExtVertexWeight>();
+        private readonly List<ExtVertexWeight> _vertexWeights = new List<ExtVertexWeight>();
 
         private VertexWeightCreator() { }
         public VertexWeightCreator(RmvModel inModel, AnimationFile skeletonFile)
@@ -33,9 +33,9 @@ namespace AssetManagement.AssetBuilders
         {
             AddVertexWeights();
 
-            return _vertexTempVertexWeights;
+            return _vertexWeights;
         }
-
+      
         private void AddVertexWeights()
         {
             for (int vertexBufferIndex = 0; vertexBufferIndex < _inModel.Mesh.VertexList.Length; vertexBufferIndex++)
@@ -68,7 +68,7 @@ namespace AssetManagement.AssetBuilders
                     weight = inVertex.BoneWeight[weightIndex],
                 };
 
-                _vertexTempVertexWeights.Add(vertexWeight);
+                _vertexWeights.Add(vertexWeight);
             };
         }
     }

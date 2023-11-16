@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AssetManagement.GenericFormats.DataStructures.Managed;
-using AssetManagement.GenericFormats.DataStructures.Unmanaged;
-using AssetManagement.GenericFormats.Unmanaged;
-using AssetManagement.MeshProcessing.Common;
+
+using AssetManagement.Geometry.DataStructures.Unmanaged;
+using AssetManagement.Geometry.MeshProcessing.Common;
 using CommonControls.FileTypes.Animation;
 using CommonControls.FileTypes.RigidModel;
 using CommonControls.FileTypes.RigidModel.LodHeader;
@@ -12,6 +12,7 @@ using CommonControls.FileTypes.RigidModel.MaterialHeaders;
 using CommonControls.FileTypes.RigidModel.Types;
 using CommonControls.FileTypes.RigidModel.Vertex;
 using Microsoft.Xna.Framework;
+
 namespace AssetManagement.AssetBuilders
 {
     public class RmvFileBuilder
@@ -53,7 +54,6 @@ namespace AssetManagement.AssetBuilders
 
                 for (var meshIndex = 0; meshIndex < packedMeshes.Count; meshIndex++)
                 {
-                    var currentMesh = new RmvModel();
                     outputFile.ModelList[lodIndex][meshIndex] = ConvertPackedMeshToRmvModel(materialFactory, outputFile, packedMeshes[meshIndex], skeletonFile);
                 };
             }
@@ -83,7 +83,6 @@ namespace AssetManagement.AssetBuilders
                 CommonWeightProcessor.NormalizeVertexWeights(vertex);
             }
         }
-
 
         private static RmvModel ConvertPackedMeshToRmvModel(MaterialFactory materialFactory, RmvFile outputFile, PackedMesh packMesh, AnimationFile skeletonFile)
         {
@@ -119,12 +118,9 @@ namespace AssetManagement.AssetBuilders
             var rmv2Mesh = new RmvMesh();
             rmv2Mesh.IndexList = new ushort[packedInputMesh.Indices.Count];
             rmv2Mesh.VertexList = new CommonVertex[packedInputMesh.Vertices.Count];
-            rmv2Mesh.VertexList = MakeCommonVertices(vertexFormat, packedInputMesh, skeletonFile).ToArray();            
 
-            for (var indexBufferIndex = 0; indexBufferIndex < rmv2Mesh.IndexList.Length; indexBufferIndex++)
-            {
-                rmv2Mesh.IndexList[indexBufferIndex] = (ushort)packedInputMesh.Indices[indexBufferIndex];
-            }
+            rmv2Mesh.VertexList = MakeCommonVertices(vertexFormat, packedInputMesh, skeletonFile).ToArray();
+            rmv2Mesh.IndexList = Array.ConvertAll(packedInputMesh.Indices.ToArray(), input => (ushort)input);
 
             if (skeletonFile == null)
             {
@@ -142,14 +138,14 @@ namespace AssetManagement.AssetBuilders
         /// Sets the weight count to 4, also checks for invalid weights
         /// </summary>
         /// <param name="rmv2Mesh"></param>
-        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="Exception"></exception>
         private static void SetWeightCounter(RmvMesh rmv2Mesh)
         {
             foreach (var vertex in rmv2Mesh.VertexList)
             {
                 if (vertex.WeightCount == 0 || vertex.WeightCount > 4)
                 {
-                    throw new System.Exception("weight count incorrect!!");
+                    throw new Exception("weight count incorrect!!");
                 }
 
                 vertex.WeightCount = 4;
@@ -174,7 +170,6 @@ namespace AssetManagement.AssetBuilders
             return rmvMesh;
         }
 
-
         private static List<CommonVertex> MakeCommonVertices(VertexFormat vertexFormat, PackedMesh packedInputMesh, AnimationFile skeletonFile)
         {
             var vertices = new CommonVertex[packedInputMesh.Vertices.Count].ToList();
@@ -186,7 +181,7 @@ namespace AssetManagement.AssetBuilders
                    packedInputMesh.Vertices[vertexIndex].Normal,
                    packedInputMesh.Vertices[vertexIndex].Uv,
                    packedInputMesh.Vertices[vertexIndex].Tangent,
-                   packedInputMesh.Vertices[vertexIndex].BiNormal,
+                   packedInputMesh.Vertices[vertexIndex].Bitangent,
                    skeletonFile);
             }
 

@@ -28,6 +28,7 @@ namespace CommonControls.FileTypes.RigidModel
         tiled_dirtmap = 63,
         ship_ambientmap = 64,
         weighted = 65,
+        RS_TERRAIN = 66, // this is new
         projected_decal = 67,
         default_type = 68,
         grass = 69,

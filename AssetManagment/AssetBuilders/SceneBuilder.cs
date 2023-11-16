@@ -1,79 +1,95 @@
-﻿using System.Collections.Generic;
-using Matrix = Microsoft.Xna.Framework.Matrix;
-using Vector3 = Microsoft.Xna.Framework.Vector3;
-using Quaternion = Microsoft.Xna.Framework.Quaternion;
+﻿using CommonControls.FileTypes.RigidModel;
+using CommonControls.FileTypes.Animation;
+using System.Collections.Generic;
+using AssetManagement.Geometry.DataStructures.Unmanaged;
 using System;
-using AssetManagement.GenericFormats.DataStructures.Unmanaged;
-using AssetManagement.GenericFormats.DataStructures.Managed;
-using CommonControls.FileTypes.RigidModel;
-using System.Linq;
-using CommonControls.FileTypes.RigidModel.Vertex;
+using AssetManagement.AnimationProcessor;
 
 namespace AssetManagement.AssetBuilders
 {
-    // TODO: finish this class (export)
-
-    /// <summary>
-    /// Builds a "SceneContaine" from an RMV2 + ANIM skeleton    
-    /// </summary>
-    public class SceneBuilder
+    interface ISceneBuilder
     {
-        static SceneContainer RmvToSceneContainer(RmvFile inFile)
+        /// <summary>
+        /// Adds a skeleton, limited to 1 per scene for now
+        /// </summary>        
+        void AddSkeleton(AnimationFile skeletonFile);
+
+        /// <summary>
+        /// Adds 1 RMV2 MESH file to scene        
+        /// </summary>    
+        void AddMesh(RmvModel rmv2Mesh);
+        
+        /// <summary>
+        /// Adds all meshes at LOD 0 from an RMV2 File
+        /// </summary>    
+        void AddMeshes(RmvFile rmv2File);
+
+        /// <summary>        
+        /// Extracts/Decodes the frame data from 1 .ANIM file and adds it to scene
+        /// limited to 1 per scene for now
+        /// </summary>    
+        void AddAnimation(AnimationFile animationFile);
+    }
+
+    public class SimpleSceneBuilder : ISceneBuilder
+    {
+        private AnimationFile _skeletonFile = null;        
+        public SceneContainer CurrentSceneContainer { get; private set; } =  new SceneContainer();
+
+        public void AddMesh(RmvModel inputRMV2Mesh)
         {
-            var newScene = new SceneContainer();
+            var packedMeshBuilder = PackedMeshBuilderFactory.GetBuilder(_skeletonFile);            
 
-            if (!inFile.ModelList.Any())
-                return null;
+            var mesh = packedMeshBuilder.CreateMesh(inputRMV2Mesh);
 
-            foreach (var model in inFile.ModelList[0]) // use 
+            CurrentSceneContainer.Meshes.Add(mesh);
+        }
+
+        public void AddMeshes(RmvFile inputRMV2File)
+        {
+            var packedMeshBuilder = PackedMeshBuilderFactory.GetBuilder(_skeletonFile);
+
+            var meshList = packedMeshBuilder.CreateMeshList(inputRMV2File);
+
+            CurrentSceneContainer.Meshes.AddRange(meshList);
+            CurrentSceneContainer.SkeletonName = inputRMV2File.Header.SkeletonName;
+        }
+                
+        public void AddSkeleton(AnimationFile skeletonFile)
+        {            
+            if (skeletonFile == null || !SkeletonHelper.IsFileSkeleton(skeletonFile))
             {
-                var outMesh = BuildUindexedMesh(model);
-                newScene.Meshes.Add(outMesh);
+                // need actual skeleton .ANIM to build the bindpose, etc
+                return;
             }
 
-            return newScene;
+            _skeletonFile = skeletonFile;
+            CopyBones(skeletonFile);
         }
 
-        private static PackedMesh BuildUindexedMesh(RmvModel model)
-        {
-            var outMesh = new PackedMesh();
+        public void AddAnimation(AnimationFile animationFile)
+        {            
+            throw new NotImplementedException("Todo");
+            // ... coming soon
+        }
 
-            for (var i = 0; i < model.Mesh.IndexList.Length; i += 3)
+        private void CopyBones(AnimationFile skeletonFile)     
+        {         
+            CurrentSceneContainer.Bones = new List<ExtBoneInfo>();
+
+            for (int boneIndex = 0; boneIndex < skeletonFile.Bones.Length; boneIndex++)
             {
-                // build 1 un-indexed triangle
-                var c1 = model.Mesh.IndexList[i * 3 + 0];
-                var c2 = model.Mesh.IndexList[i * 3 + 1];
-                var c3 = model.Mesh.IndexList[i * 3 + 2];
+                var newBone = new ExtBoneInfo()
+                {
+                    id = skeletonFile.Bones[boneIndex].Id,
+                    parentId = skeletonFile.Bones[boneIndex].ParentId,
+                    name = skeletonFile.Bones[boneIndex].Name,
+                    localTranslation = SceneBuilderHelpers.GetBoneTranslation(skeletonFile, boneIndex),
+                    localRotation = SceneBuilderHelpers.GetBoneRotation(skeletonFile, boneIndex),
+                };
 
-                var v1 = ConvertToPackedVertex(model.Mesh.VertexList[c1]);
-                var v2 = ConvertToPackedVertex(model.Mesh.VertexList[c2]);
-                var v3 = ConvertToPackedVertex(model.Mesh.VertexList[c3]);
-
-                outMesh.Vertices.Add(v1);
-                outMesh.Vertices.Add(v2);
-                outMesh.Vertices.Add(v3);
-            }
-
-            return outMesh;
-        }
-               
-        private static ExtPackedCommonVertex ConvertToPackedVertex(CommonVertex inVertex)
-        {
-            var outVertex = new ExtPackedCommonVertex();
-
-            outVertex.Position.x = inVertex.Position.X;
-            outVertex.Position.y = inVertex.Position.Y;
-            outVertex.Position.z = inVertex.Position.Z;
-            outVertex.Position.w = inVertex.Position.W;
-
-            outVertex.Uv.x = inVertex.Uv.X;
-            outVertex.Uv.y = inVertex.Uv.Y;
-
-            outVertex.Normal.x = inVertex.Normal.X;
-            outVertex.Normal.y = inVertex.Normal.Y;
-            outVertex.Normal.z = inVertex.Normal.Z;
-
-            return outVertex;
-        }
+                CurrentSceneContainer.Bones.Add(newBone);
+            };
+        }              
     }
 }

@@ -4,7 +4,26 @@
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="GenericFormats\Managed\MeshDataStructures.cs" />
+	  <Compile Remove="AssetManagement\**" />
+	  <Compile Remove="GenericFormats\**" />
+	  <EmbeddedResource Remove="AssetManagement\**" />
+	  <EmbeddedResource Remove="GenericFormats\**" />
+	  <None Remove="AssetManagement\**" />
+	  <None Remove="GenericFormats\**" />
+	  <Page Remove="AssetManagement\**" />
+	  <Page Remove="GenericFormats\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Geometry\DataStructures\Unmanaged\__SceneContainer.cs" />
+	  <Compile Remove="Geometry\GeometryBuilders\SceneContainerBuilder.cs" />
+	  <Compile Remove="Geometry\GeometryBuilders\SceneContainerBuilderHelpers.cs" />
+	  <Compile Remove="Geometry\Strategies\Fbx\ExportDIalog\UserControls\ExportPanelUserControl.xaml.cs" />
+	  <Compile Remove="Geometry\Strategies\Fbx\FbxAssetHandling\AssetManagerFbxExport.cs" />
+	  <Compile Remove="Geometry\Strategies\Fbx\ViewModels\AssetExportDialog.cs" />
+	  <Compile Remove="Geometry\Strategies\Fbx\ViewModels\FBXSettingsViewModel.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Remove="Geometry\Strategies\Fbx\ExportDIalog\UserControls\ExportInfoPanel.xaml" />
 	</ItemGroup>
 
   <ItemGroup>    
@@ -28,7 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="GenericFormats\Managed\" />
+    <Folder Include="Geometry\GeometryBuilders\" />
+    <Folder Include="Geometry\Strategies\Fbx\ExportDIalog\UserControls\" />
+    <Folder Include="Geometry\Strategies\Fbx\ViewModels\" />
   </ItemGroup>
 
 </Project>

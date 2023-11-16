@@ -1,14 +1,9 @@
-﻿using AssetManagement.AssetHandling;
-using AssetManagement.Strategies.Fbx;
-using CommonControls;
-using CommonControls.Interfaces.AssetManagement;
+﻿using CommonControls.Interfaces.AssetManagement;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using View3D;
+using CommonControls;
+using AssetManagement.Geometry.Strategies.Fbx.FbxAssetHandling;
+using AssetManagement.Geometry.Services;
+using CommonControls.Events.UiCommands;
 
 namespace AssetManagement
 {
@@ -18,6 +13,16 @@ namespace AssetManagement
         {
             serviceCollection.AddScoped<IAssetImporterProvider, AssetImporterProvider>();
             serviceCollection.AddTransient<IAssetImporter, FbxAssetImporter>();
+
+            serviceCollection.AddScoped<IAssetExporterProvider, AssetExporterProvider>();
+            serviceCollection.AddTransient<IAssetExporter, FbxAssetExporter>();
+
+
+            // make these commands happen in "assetEditor"
+            serviceCollection.AddTransient<ImportAssetCommand>();
+            serviceCollection.AddTransient<ExportAssetCommand>(); 
+
+
         }
     }
 }
