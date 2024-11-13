@@ -3,6 +3,7 @@ using System.IO;
 using System;
 using System.Linq;
 using Editors.ImportExport.Exporting.Exporters.RmvToGltf;
+using Editors.ImportExport.Importing.Importers.GltfToRmv;
 using Editors.KitbasherEditor.UiCommands;
 using Editors.Shared.DevConfig.Base;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Shared.Core.Services;
 using Shared.Core.ToolCreation;
 using Shared.EmbeddedResources;
 using Shared.Ui.Events.UiCommands;
+using Shared.GameFormats.RigidModel;
 
 namespace Editors.Shared.DevConfig.Configs
 {
@@ -191,6 +193,30 @@ namespace Editors.Shared.DevConfig.Configs
 
             var settings = new RmvToGltfExporterSettings(meshPackFile, new List<PackFile>() { animPackFile }, null,  destPath, true, true, true);
             _exporter.Export(settings);
+        }
+
+        public void OverrideSettings(ApplicationSettings currentSettings)
+        {
+            currentSettings.LoadCaPacksByDefault = true;
+            currentSettings.CurrentGame = GameTypeEnum.Warhammer3;            
+        }
+    }
+    
+    internal class KitBash_Import : IDeveloperConfiguration
+    {
+        private readonly PackFileService _packFileService;
+        private readonly GltfImporter _Importer = new GltfImporter(); // TODO: add as "transient" in DI file
+
+        public KitBash_Import(PackFileService packFileService, RmvToGltfExporter exporter)
+        {
+            _packFileService = packFileService;
+         //   _exporter = exporter;
+        }
+
+        public void OpenFileOnLoad()
+        {            
+            var settings = new GltfImporterSettings(@"C:\Users\Kaiza\Documents\AE_Export_Handedness\emp_karl_franz.gltf", true, null);           
+            _Importer.Import(settings);
         }
 
         public void OverrideSettings(ApplicationSettings currentSettings)

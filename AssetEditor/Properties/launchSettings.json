@@ -63,6 +63,11 @@
       "commandName": "Project",
       "commandLineArgs": "-devcfg Kitbash_Export",
       "nativeDebugging": false
+    },
+    "AE-Kitbash-Import": {
+      "commandName": "Project",
+      "commandLineArgs": "-devcfg Kitbash_Import",
+      "nativeDebugging": false
     }
   }
 }
