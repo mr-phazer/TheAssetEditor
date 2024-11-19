@@ -417,8 +417,8 @@ namespace Shared.Core.PackFiles
 
             if (!string.IsNullOrWhiteSpace(directoryPath))
                 directoryPath += "\\";
-            directoryPath += newFile.Name;
-            container.FileList[directoryPath.ToLower()] = newFile;
+            directoryPath += newFile.Name;            
+            container.FileList[directoryPath.ToLower()] = newFile;  
 
             if (TriggerFileUpdates)
             {

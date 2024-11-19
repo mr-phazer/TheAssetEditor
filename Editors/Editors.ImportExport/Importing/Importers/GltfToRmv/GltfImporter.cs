@@ -1,50 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Editors.ImportExport.Exporting.Exporters.RmvToGltf.Helpers;
-using GameWorld.Core.SceneNodes;
-using Microsoft.Xna.Framework.Graphics;
-using XNA = Microsoft.Xna.Framework;
-using GLTF = SharpGLTF.Schema2;
-using Shared.Core.PackFiles.Models;
+﻿using Shared.Core.PackFiles.Models;
 using Shared.GameFormats.RigidModel;
-using Shared.GameFormats.RigidModel.Vertex;
-using SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
-using SharpGLTF.Geometry.VertexTypes;
-using SharpGLTF.Transforms;
 using SharpGLTF.Schema2;
-using SharpGLTF.Geometry;
-using SharpGLTF.Materials;
 using Editors.ImportExport.Importing.Importers.GltfToRmv.Helper;
 using System.IO;
-using GameWorld.Core.Animation;
-using GameWorld.Core.Rendering.Geometry;
-
+using Shared.Core.PackFiles;
+using Shared.Ui.BaseDialogs.PackFileBrowser;
 
 
 namespace Editors.ImportExport.Importing.Importers.GltfToRmv
 {
-    public record GltfImporterSettings(
-       string InputGltfFile,
-       bool ConvertNormalTextureToOrnge,
-       PackFileContainer dest
-   );
+    public record GltfImporterSettings
+    (
+        string InputGltfFile,
+        bool ConvertNormalTextureToOrnge,
+        TreeNode destinationPackFolder
+     );
 
     public class GltfImporter
     {
+        private readonly PackFileService _packFileService;
+
+        public GltfImporter(PackFileService packFileSerivce)
+        {
+            _packFileService = packFileSerivce;
+        }
+
         private ModelRoot? _modelRoot;
         public void Import(GltfImporterSettings settings)
         {
             _modelRoot = ModelRoot.Load(settings.InputGltfFile);
 
-            var rmv2File = RmvMeshBuilder.Build(settings, _modelRoot);                        
-            var bytesRmv2 = ModelFactory.Create().Save(rmv2File);            
+            var importedFileName = GetImporedtPackFilePath(settings);
 
-            TESTING_SaveTestFileToDisk(settings, bytesRmv2);
+            var rmv2File = RmvMeshBuilder.Build(settings, _modelRoot);
+            var bytesRmv2 = ModelFactory.Create().Save(rmv2File);
+            var packFileImported = new PackFile(importedFileName, new MemorySource(bytesRmv2));
+
+            _packFileService.AddFileToPack(settings.destinationPackFolder.FileOwner, settings.destinationPackFolder.GetFullPath(), packFileImported);
+        }
+
+        private static string GetImporedtPackFilePath(GltfImporterSettings settings)
+        {
+            var nodePath = ""; 
+            var fileName = Path.GetFileNameWithoutExtension(settings.InputGltfFile);
+            string importedFileName = $@"{nodePath}/{fileName}.rigid_model_v2";
+
+            return importedFileName;
         }
 
         private static void TESTING_SaveTestFileToDisk(GltfImporterSettings settings, byte[] bytes)

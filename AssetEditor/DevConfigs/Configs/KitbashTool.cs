@@ -205,7 +205,7 @@ namespace Editors.Shared.DevConfig.Configs
     internal class KitBash_Import : IDeveloperConfiguration
     {
         private readonly PackFileService _packFileService;
-        private readonly GltfImporter _Importer = new GltfImporter(); // TODO: add as "transient" in DI file
+        private readonly GltfImporter _Importer;
 
         public KitBash_Import(PackFileService packFileService, RmvToGltfExporter exporter)
         {

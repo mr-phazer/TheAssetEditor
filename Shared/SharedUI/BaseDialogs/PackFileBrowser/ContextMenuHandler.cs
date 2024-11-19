@@ -38,7 +38,7 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
         public ICommand CopyNodePathCommand { get; set; }
         public ICommand ExportToFolderCommand { get; set; }
         public ICommand AdvancedExportToFolderCommand { get; set; }
-        
+
         public ICommand CopyToEditablePackCommand { get; set; }
         public ICommand DuplicateCommand { get; set; }
         public ICommand CreateFolderCommand { get; set; }
@@ -77,7 +77,7 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
             CollapseAllChildrenCommand = new RelayCommand(CollapsAllChildren);
             ExportToFolderCommand = new RelayCommand(ExportToFolder);
             AdvancedExportToFolderCommand = new RelayCommand(AdvancedExportToFolder);
-            
+
             OpenPack_FileNotpadPluss_Command = new RelayCommand(() => OpenPackFileUsing(@"C:\Program Files\Notepad++\notepad++.exe", _selectedNode.Item));
             OpenPackFile_HxD_Command = new RelayCommand(() => OpenPackFileUsing(@"C:\Program Files\HxD\HxD.exe", _selectedNode.Item));
         }
@@ -92,31 +92,20 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
 
             if (_selectedNode.NodeType == NodeType.Directory)
             {
-                var window = new TextInputWindow("Rename folder", _selectedNode.Name);
-                if (window.ShowDialog() == true)
+                var newFolderName = EditFileNameDialog.ShowDialog(_selectedNode.Parent, _selectedNode.Name);
+                if (newFolderName.Any())
                 {
-                    if (string.IsNullOrWhiteSpace(window.TextValue))
-                    {
-                        MessageBox.Show("Folder name can not be empty!");
-                        return;
-                    }
-
-                    _selectedNode.Name = window.TextValue;
-                    _packFileService.RenameDirectory(_selectedNode.FileOwner, _selectedNode.GetFullPath(), window.TextValue);
+                    _selectedNode.Name = newFolderName;
+                    _packFileService.RenameDirectory(_selectedNode.FileOwner, _selectedNode.GetFullPath(), newFolderName);
                 }
+
             }
             else if (_selectedNode.NodeType == NodeType.File)
             {
-                var window = new TextInputWindow("Rename file", _selectedNode.Item.Name);
-                if (window.ShowDialog() == true)
-                {
-                    if (string.IsNullOrWhiteSpace(window.TextValue))
-                    {
-                        MessageBox.Show("File name can not be empty!");
-                        return;
-                    }
-                    _packFileService.RenameFile(_selectedNode.FileOwner, _selectedNode.Item, window.TextValue);
-                }
+                var newFileName = EditFileNameDialog.ShowDialog(_selectedNode.Parent, _selectedNode.Name);
+                if (newFileName.Any())
+                    _packFileService.RenameFile(_selectedNode.FileOwner, _selectedNode.Item, newFileName);
+
             }
         }
 
@@ -176,16 +165,12 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
                 return;
             }
 
-            var window = new TextInputWindow("Create folder", default, true);
-            if (window.ShowDialog() == true)
-            {
-                if (string.IsNullOrWhiteSpace(window.TextValue))
-                {
-                    MessageBox.Show("Folder name can not be empty!");
-                    return;
-                }
-                _selectedNode.Children.Add(new TreeNode(window.TextValue, NodeType.Directory, _selectedNode.FileOwner, _selectedNode));
-            }
+
+            var folderName = EditFileNameDialog.ShowDialog(_selectedNode, "");
+
+            if (folderName.Any())
+                _selectedNode.Children.Add(new TreeNode(folderName, NodeType.Directory, _selectedNode.FileOwner, _selectedNode));
+
         }
 
         void DeleteNode()
@@ -240,7 +225,6 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
                 }
             }
         }
-
 
         void SaveAsPackFile()
         {
@@ -381,7 +365,6 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
 
         public abstract void Create(TreeNode node);
 
-
         protected ContextMenuItem Additem(ContextItems type, ContextMenuItem parent)
         {
             var item = GetItem(type);
@@ -484,21 +467,80 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
         }
     }
 
-    public class ContextMenuItem
+    /// <summary>
+    /// Shows simple value nntry dialog, for file/folder names
+    /// Shows error boxes on invalid input, asks the user to retry, and shows the dialog again
+    /// TODO: Make neater solution? Edit-in-place; make own simple value editing dialog, with checking
+    /// </summary>
+    public class EditFileNameDialog
     {
-        public string Name { get; set; }
-        public ICommand Command { get; set; }
-        public ObservableCollection<ContextMenuItem> ContextMenu { get; set; } = new ObservableCollection<ContextMenuItem>();
-
-        public ContextMenuItem(string name = "", ICommand command = null)
+        static public string ShowDialog(TreeNode parentNode, string currentValue)
         {
-            Name = name;
-            Command = command;
+            bool inputCorrect = false;
+            string dialogValue = currentValue;
+            string newFileName = "";
+
+            while (!inputCorrect)
+            {
+                inputCorrect = true;
+                var window = new TextInputWindow("Create folder", dialogValue, true);
+                dialogValue = window.TextValue; // store for next dialog instance (if ínput is invalud)
+
+                if (window.ShowDialog() == false)
+                    return ""; // exit is "cancel" pressed
+
+                inputCorrect = inputCorrect && IsStringProper(window.TextValue);
+
+                newFileName = window.TextValue.ToLower().Trim();
+
+                inputCorrect = inputCorrect && IsFileNameUniqueInFolder(parentNode, newFileName);
+                inputCorrect = inputCorrect && AreStringCharsValidForFileName(newFileName);
+
+            }
+
+            return newFileName;
         }
 
-        public override string ToString()
+        private static bool IsStringProper(string value)
         {
-            return Name;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                MessageBox.Show("Folder name can not be empty! Please Try Again.\nPlease Try Again.");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsFileNameUniqueInFolder(TreeNode parentNode, string newFileName)
+        {
+            foreach (var node in parentNode.Children)
+            {
+                if (node.Name == newFileName)
+                {
+                    MessageBox.Show($"Folder with name '{node.Name}' already exists in this folder!\nPlease Try Again.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        static private bool AreStringCharsValidForFileName(string fileNameToCheck)
+        {
+            var listOfInvalidChars = Path.GetInvalidFileNameChars();
+            foreach (var c in fileNameToCheck)
+            {
+                foreach (var invalidChar in listOfInvalidChars)
+                {
+                    if (c == invalidChar)
+                    {
+                        MessageBox.Show($"Folder name contains invalid character: {c}. \nPlease Try Again.");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

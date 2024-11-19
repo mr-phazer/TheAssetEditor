@@ -159,7 +159,7 @@ namespace Editors.ImportExport.Exporting.Exporters.RmvToGltf.Helpers
             if (materialTexture.Path != null)
             {
                 var systemPath = _ddsToMaterialPngExporter.Export(materialTexture.Path, settings.OutputPath, settings.ConvertMaterialTextureToBlender);
-                material.WithChannelImage(KnownChannel.MetallicRoughness, systemPath);
+                 material.WithChannelImage(KnownChannel.MetallicRoughness, systemPath);
             }
 
             var baseColourTexture = textures.FirstOrDefault(t => t.Type == TextureType.BaseColour);

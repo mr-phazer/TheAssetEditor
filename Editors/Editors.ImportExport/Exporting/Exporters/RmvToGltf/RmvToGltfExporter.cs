@@ -14,7 +14,7 @@ namespace Editors.ImportExport.Exporting.Exporters.RmvToGltf
     public record RmvToGltfExporterSettings(
 
         PackFile InputModelFile,
-        List<PackFile> InputAnimationFiles,
+        List<PackFile> InputAnimationFiles ,
         PackFile InputSkeletonFile,
         string OutputPath,
         bool ConvertMaterialTextureToBlender,
@@ -59,7 +59,7 @@ namespace Editors.ImportExport.Exporting.Exporters.RmvToGltf
                 var animSkeletonFile = FetchAnimSkeleton(rmv2);
                 gltfSkeleton = _gltfSkeletonCreator.Create(outputScene, animSkeletonFile, doMirror);
 
-                if (settings.ExportAnimations && settings.InputAnimationFiles.Count != 0)
+                if (settings.ExportAnimations && settings.InputAnimationFiles != null && settings.InputAnimationFiles.Any())
                     GenerateAnimations(settings, gltfSkeleton, outputScene, animSkeletonFile, doMirror);
             }
 

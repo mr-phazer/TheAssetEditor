@@ -73,7 +73,9 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
                     var createMenu = Additem(ContextItems.Create, newContextMenu);
                     Additem(ContextItems.CreateFolder, createMenu);
 
-                    AddSeperator(newContextMenu);
+                    AddSeperator(newContextMenu);                    
+                    var importSubMenu = Additem(ContextItems.Import, newContextMenu);
+                    Additem(ContextItems.AdvancedImport, importSubMenu);
 
                     AddSeperator(newContextMenu);
                     Additem(ContextItems.Rename, newContextMenu);
