@@ -58,18 +58,15 @@ namespace Test.ImportExport.Importing.Importers.GltfImporterTest
             var pfs = PackFileSerivceTestHelper.Create(TestData.InputPack);
 
             var meshBuilder = new GltfMeshBuilder();
-            var normalExporter = new Mock<IDdsToNormalPngExporter>();
-            var materialExporter = new Mock<IDdsToMaterialPngExporter>();
             var eventHub = new Mock<IGlobalEventHub>();
             var skeletontonLookupHelper = new SkeletonAnimationLookUpHelper(pfs, eventHub.Object);
             var skeletontonBuilder = new GltfSkeletonBuilder(pfs);
             var animationBuilder = new GltfAnimationBuilder(pfs);
-            var textureHandler = new GltfTextureHandler(normalExporter.Object, materialExporter.Object);
             var sceneSaver = new TestGltfSceneSaver();
             var standardDialog = new Mock<IStandardDialogs>();
-            var sceneLoader = new GltfSceneLoader(standardDialog.Object);            
-            var importer = new GltfImporter(pfs, standardDialog.Object, skeletontonLookupHelper);
-
+            var sceneLoader = new GltfSceneLoader(standardDialog.Object);
+            var materialBuilder = new RmvMaterialBuilder(pfs, standardDialog.Object);
+            var importer = new GltfImporter(pfs, standardDialog.Object, skeletontonLookupHelper, materialBuilder);
             var packFileContainer = new PackFileContainer("new");
             var settings = new GltfImporterSettings(TestData.InputGtlfFile, "skeletons", packFileContainer, true, true, true);
 
@@ -95,15 +92,13 @@ namespace Test.ImportExport.Importing.Importers.GltfImporterTest
             // Arrange 
             var pfs = PackFileSerivceTestHelper.Create(TestData.InputPack);
 
-            var meshBuilder = new GltfMeshBuilder();
-            var normalExporter = new Mock<IDdsToNormalPngExporter>();
-            var materialExporter = new Mock<IDdsToMaterialPngExporter>();
+            var meshBuilder = new GltfMeshBuilder();            
             var eventHub = new Mock<IGlobalEventHub>();
             var standardDialog = new Mock<IStandardDialogs>();
             var skeletontonLookupHelper = new SkeletonAnimationLookUpHelper(pfs, eventHub.Object);
             var skeletontonBuilder = new GltfSkeletonBuilder(pfs);
             var animationBuilder = new GltfAnimationBuilder(pfs);
-            var textureHandler = new GltfTextureHandler(normalExporter.Object, materialExporter.Object);
+            var materialBuilder = new RmvMaterialBuilder(pfs, standardDialog.Object);
             var sceneLoader = new GltfSceneLoader(standardDialog.Object);
             var skeletonFile = skeletontonLookupHelper.GetSkeletonFileFromName(TestData.Rmv2Expected.skeletonName);
             var packFileContainer = new PackFileContainer("new");
@@ -127,7 +122,7 @@ namespace Test.ImportExport.Importing.Importers.GltfImporterTest
             // Test Importer code, check if Rmv2 file is created correctly
            
             Assert.That(skeletonFile, Is.Not.Null);
-            var rmv2Mesh = RmvMeshBuilder.Build(settings, modelRoot, skeletonFile, TestData.Rmv2Expected.skeletonName);            
+            var rmv2Mesh = RmvMeshBuilder.Build(settings, modelRoot, skeletonFile, TestData.Rmv2Expected.skeletonName.ToLower());            
             Assert.That(rmv2Mesh, Is.Not.Null);
             Assert.That(rmv2Mesh.Header.SkeletonName, Is.EqualTo(TestData.Rmv2Expected.skeletonName));
             Assert.That(rmv2Mesh.ModelList, Is.Not.Null);

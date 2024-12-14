@@ -13,7 +13,7 @@ using System.Windows;
 using Shared.GameFormats.Animation;
 using Shared.Core.ErrorHandling;
 using CommonControls.BaseDialogs.ErrorListDialog;
-
+using SharpGLTF.Materials;
 
 namespace Editors.ImportExport.Importing.Importers.GltfToRmv
 {
@@ -22,12 +22,14 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
         private readonly IPackFileService _packFileService;
         private readonly IStandardDialogs _exceptionService;
         private readonly SkeletonAnimationLookUpHelper _skeletonLookUpHelper;
+        private readonly RmvMaterialBuilder _materialBuilder;
 
-        public GltfImporter(IPackFileService packFileSerivce, IStandardDialogs exceptionService, SkeletonAnimationLookUpHelper skeletonLookUpHelper)
+        public GltfImporter(IPackFileService packFileService, IStandardDialogs exceptionService, SkeletonAnimationLookUpHelper skeletonLookUpHelper, RmvMaterialBuilder materialBuilder)
         {
-            _packFileService = packFileSerivce;
+            _packFileService = packFileService;
             _exceptionService = exceptionService;
             _skeletonLookUpHelper = skeletonLookUpHelper;
+            _materialBuilder = materialBuilder;
         }
 
         public void Import(GltfImporterSettings settings)
@@ -66,13 +68,15 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
             }
 
             var rmv2File = RmvMeshBuilder.Build(settings, modelRoot, skeletonAnimFile, skeletonName);
+
+            _materialBuilder.BuildRmvFileMaterials(settings, modelRoot, rmv2File);
+
+            rmv2File.RecalculateOffsets();
+
             var bytesRmv2 = ModelFactory.Create().Save(rmv2File);
-
             var packFileImported = new PackFile(importedFileName, new MemorySource(bytesRmv2));
-
             var newFile = new NewPackFileEntry(settings.DestinationPackPath, packFileImported);
-            _packFileService.AddFilesToPack(settings.DestinationPackFileContainer, [newFile]);
-            
+            _packFileService.AddFilesToPack(settings.DestinationPackFileContainer, [newFile]);            
         }
 
         private static string GetImportedPackFileName(GltfImporterSettings settings)

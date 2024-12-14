@@ -40,6 +40,7 @@ namespace Editors.ImportExport
 
             // Importers
             services.AddTransient<GltfImporter>();
+            services.AddTransient<RmvMaterialBuilder>();
 
             // Image Save Helper
             services.AddScoped<IImageSaveHandler, SystemImageSaveHandler>();

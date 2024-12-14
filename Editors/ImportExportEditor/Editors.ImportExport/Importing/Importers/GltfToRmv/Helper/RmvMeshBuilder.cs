@@ -62,7 +62,8 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv.Helper
             foreach (var mesh in modelRoot.LogicalMeshes)
             {
                 var rmv2Mesh = GenerateRmvMesh(mesh, modelRoot, animSkeletonFile);
-                var rmvModel = CreateRmvModel(rmv2Mesh, mesh.Name,animSkeletonFile);
+                var rmvModel = CreateRmvModel(rmv2Mesh, mesh.Name, animSkeletonFile);                
+
                 modelList.Add(rmvModel);
             }
 
