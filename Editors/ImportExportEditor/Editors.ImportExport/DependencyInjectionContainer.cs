@@ -13,10 +13,14 @@ using Editors.ImportExport.Exporting.Presentation.RmvToGltf;
 using Editors.ImportExport.Importing;
 using Editors.ImportExport.Importing.Importers.GltfToRmv;
 using Editors.ImportExport.Importing.Importers.GltfToRmv.Helper;
+using Editors.ImportExport.Importing.Presentation;
+using Editors.ImportExport.Importing.Presentation.RmvToGltf;
+using Editors.ImportExport.Importing.Presentation;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Core.DependencyInjection;
 using Shared.Core.DevConfig;
 using Shared.Ui.BaseDialogs.PackFileBrowser.ContextMenu.External;
+using Editors.ImportImport.Importing.Presentation.RmvToGltf;
 
 namespace Editors.ImportExport
 {
@@ -37,6 +41,11 @@ namespace Editors.ImportExport
             services.AddTransient<DdsToPngExporter>();
             services.AddTransient<IDdsToNormalPngExporter, DdsToNormalPngExporter>();
             services.AddTransient<RmvToGltfExporter>();
+
+            // Importer ViewModels
+            RegisterWindow<ImportWindow>(services);
+            services.AddTransient<ImporterCoreViewModel>();
+            services.AddTransient<IImporterViewModel, RmvToGltfImporterViewModel>();
 
             // Importers
             services.AddTransient<GltfImporter>();

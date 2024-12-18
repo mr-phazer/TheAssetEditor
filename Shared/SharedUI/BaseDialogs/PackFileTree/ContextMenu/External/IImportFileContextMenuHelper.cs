@@ -15,9 +15,9 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser.ContextMenu.External
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        bool CanImportFile(string filePath);
+        bool CanImportFile(PackFile packFile);
 
         // implemenation returns packfile container, so it can create new foldders
-        public void ShowDialog(TreeNode node);
+        public void ShowDialog(TreeNode nodeClickedOn);
     }
 }
