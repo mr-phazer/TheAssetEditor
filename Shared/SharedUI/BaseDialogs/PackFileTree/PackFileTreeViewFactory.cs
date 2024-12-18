@@ -1,8 +1,8 @@
 ﻿using Shared.Core.Events;
 using Shared.Core.PackFiles;
-using Shared.Ui.BaseDialogs.PackFileBrowser.ContextMenu;
+using Shared.Ui.BaseDialogs.PackFileTree.ContextMenu;
 
-namespace Shared.Ui.BaseDialogs.PackFileBrowser
+namespace Shared.Ui.BaseDialogs.PackFileTree
 {
     public class PackFileTreeViewFactory
     {
@@ -17,10 +17,10 @@ namespace Shared.Ui.BaseDialogs.PackFileBrowser
             _contextMenuFactory = contextMenuFactory;
         }
 
-        public PackFileBrowserViewModel Create(ContextMenuType contextMenu, bool showCaFiles)
+        public PackFileBrowserViewModel Create(ContextMenuType contextMenu, bool showCaFiles, bool showFoldersOnly)
         {
             var contextMenuBuilder = _contextMenuFactory.GetContextMenu(contextMenu);
-            var fileTree = new PackFileBrowserViewModel(contextMenuBuilder, _packFileService, _eventHub, showCaFiles); 
+            var fileTree = new PackFileBrowserViewModel(contextMenuBuilder, _packFileService, _eventHub, showCaFiles, showFoldersOnly);
             return fileTree;
         }
     }

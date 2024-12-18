@@ -1,7 +1,8 @@
 ﻿using Editors.KitbasherEditor.ChildEditors.MeshFitter;
+using Editors.KitbasherEditor.ChildEditors.PinTool;
+using Editors.KitbasherEditor.ChildEditors.PinTool.Commands;
 using Editors.KitbasherEditor.ChildEditors.ReRiggingTool;
 using Editors.KitbasherEditor.ChildEditors.VertexDebugger;
-using Editors.KitbasherEditor.Commands;
 using Editors.KitbasherEditor.Core.MenuBarViews;
 using Editors.KitbasherEditor.EventHandlers;
 using Editors.KitbasherEditor.Services;
@@ -67,8 +68,10 @@ namespace Editors.KitbasherEditor
             RegisterWindow<VertexDebuggerWindow>(serviceCollection);
 
             // Pin tool
-            serviceCollection.AddScoped<PinToolViewModel>();
+            serviceCollection.AddTransient<PinToolViewModel>();
             RegisterWindow<PinToolWindow>(serviceCollection);
+            serviceCollection.AddTransient<PinMeshToVertexCommand>();
+            serviceCollection.AddTransient<SkinWrapRiggingCommand>();
 
             // Save dialog
             serviceCollection.AddTransient<SaveDialogViewModel>();
@@ -94,8 +97,6 @@ namespace Editors.KitbasherEditor
             serviceCollection.AddTransient<ImportReferenceMeshCommand>();
 
             RegisterAllAsInterface<IDeveloperConfiguration>(serviceCollection, ServiceLifetime.Transient);
-
-
 
             // Commands
             serviceCollection.AddTransient<RemapBoneIndexesCommand>();

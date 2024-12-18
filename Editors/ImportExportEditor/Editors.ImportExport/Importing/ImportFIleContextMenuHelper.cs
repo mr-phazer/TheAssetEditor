@@ -3,8 +3,8 @@ using Editors.ImportExport.Exporting.Exporters;
 using Shared.Core.Events;
 using Shared.Core.PackFiles.Models;
 using Shared.Core.Settings;
-using Shared.Ui.BaseDialogs.PackFileBrowser.ContextMenu.External;
-using TreeNode = Shared.Ui.BaseDialogs.PackFileBrowser.TreeNode;
+using Shared.Ui.BaseDialogs.PackFileTree.ContextMenu.External;
+using TreeNode = Shared.Ui.BaseDialogs.PackFileTree.TreeNode;
 
 namespace Editors.ImportExport.Importing
 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
-using CommonControls.PackFileBrowser;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Editors.Shared.Core.Common;
 using Editors.Shared.Core.Common.BaseControl;
@@ -26,6 +25,7 @@ namespace Editor.VisualSkeletonEditor.SkeletonEditor
         private readonly CopyPasteManager _copyPasteManager;
         private readonly IStandardDialogs _packFileUiProvider;
         private readonly IFileSaveService _packFileSaveService;
+
         [ObservableProperty] string _skeletonName = "";
         [ObservableProperty] string _refMeshName = "";
         [ObservableProperty] string _sourceSkeletonName = "";
@@ -173,9 +173,9 @@ namespace Editor.VisualSkeletonEditor.SkeletonEditor
         private void SetTechSkeletonTransform(bool value)
         {
             if (value)
-                _techSkeletonNode.SetTransform(Matrix.CreateScale(1, 1, -1));
+                _techSkeletonNode.Offset = Matrix.CreateScale(1, 1, -1);
             else
-                _techSkeletonNode.SetTransform(Matrix.Identity);
+                _techSkeletonNode.Offset = Matrix.Identity;
         }
 
         private void HandleTranslationChanged()
@@ -271,9 +271,9 @@ namespace Editor.VisualSkeletonEditor.SkeletonEditor
             if (result.Result && result.File != null)
             {
                 var file = result.File;
-                SceneObjectEditor.SetMesh(_techSkeletonNode, file);
+                SceneObjectEditor.SetMesh(_techSkeletonNode, file, false);
                 RefMeshName = _packFileService.GetFullPath(file);
-                LoadSkeleton(_techSkeletonNode, _techSkeletonNode.SkeletonName.Value);
+                //LoadSkeleton(_techSkeletonNode, _techSkeletonNode.SkeletonName.Value);
             }
         }
     }

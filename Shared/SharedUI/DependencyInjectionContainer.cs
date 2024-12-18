@@ -2,9 +2,9 @@
 using Shared.Core.DependencyInjection;
 using Shared.Core.Services;
 using Shared.Core.ToolCreation;
-using Shared.Ui.BaseDialogs.PackFileBrowser;
-using Shared.Ui.BaseDialogs.PackFileBrowser.ContextMenu;
-using Shared.Ui.BaseDialogs.PackFileBrowser.ContextMenu.Commands;
+using Shared.Ui.BaseDialogs.PackFileTree;
+using Shared.Ui.BaseDialogs.PackFileTree.ContextMenu;
+using Shared.Ui.BaseDialogs.PackFileTree.ContextMenu.Commands;
 using Shared.Ui.BaseDialogs.StandardDialog;
 using Shared.Ui.BaseDialogs.ToolSelector;
 
@@ -46,6 +46,7 @@ namespace Shared.Ui
             services.AddScoped<OnRenameNodeCommand>();
             services.AddScoped<OpenNodeInNotepadCommand>();
             services.AddScoped<OpenNodeInHxDCommand>();
+            services.AddScoped<OpenPackInFileExplorerCommand>();
             services.AddScoped<SaveAsPackFileContainerCommand>();
             services.AddScoped<SavePackFileContainerCommand>();
         }

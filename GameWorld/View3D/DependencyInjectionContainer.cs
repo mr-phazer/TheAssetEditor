@@ -37,6 +37,8 @@ namespace GameWorld.Core
             // Graphics scene
             serviceCollection.AddScoped<IGeometryGraphicsContextFactory, GeometryGraphicsContextFactory>();
             serviceCollection.AddScoped<IWpfGame, WpfGame>();
+            serviceCollection.AddScoped<IScopedResourceLibrary, ScopedResourceLibrary>();
+            
             serviceCollection.AddSingleton<ResourceLibrary>();
 
             // Settings
@@ -134,7 +136,7 @@ namespace GameWorld.Core
             serviceCollection.AddTransient<GroupObjectsCommand>();
             serviceCollection.AddTransient<GrowMeshCommand>();
             serviceCollection.AddTransient<ObjectSelectionModeCommand>();
-            serviceCollection.AddTransient<PinMeshToVertexCommand>();
+
             serviceCollection.AddTransient<BoneSelectionCommand>();
             serviceCollection.AddTransient<TransformBoneCommand>();
             serviceCollection.AddTransient<ResetTransformBoneCommand>();

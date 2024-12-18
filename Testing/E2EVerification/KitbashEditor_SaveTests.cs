@@ -1,13 +1,15 @@
-﻿using E2EVerification.Shared;
+﻿using Editor.VisualSkeletonEditor.SkeletonEditor;
 using Editors.KitbasherEditor.UiCommands;
 using GameWorld.Core.Services.SceneSaving;
 using GameWorld.Core.Services.SceneSaving.Lod;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Core.Events;
 using Shared.Core.Settings;
+using Shared.Core.ToolCreation;
 using Shared.GameFormats.RigidModel;
-using Shared.TestUtility;
 using Shared.Ui.Events.UiCommands;
+using Test.TestingUtility.Shared;
+using Test.TestingUtility.TestUtility;
 
 namespace E2EVerification
 {
@@ -22,6 +24,7 @@ namespace E2EVerification
         {
         }
 
+
         [Test]
         public void Warhammer3_SaveKarl_Default()
         {
@@ -32,14 +35,11 @@ namespace E2EVerification
             var originalRmv2File = runner.PackFileService.FindFile(_rmvFilePathKarl);
             runner.CommandFactory.Create<OpenEditorCommand>().Execute(originalRmv2File);
 
-            // Get the scope of the newly created kitbash editor
-            var kitbashScope = runner.ScopeRepository.Scopes.First().Value.ServiceProvider;
-
             // Edit the save settings and trigger a save
-            var saveSettings = kitbashScope.GetRequiredService<GeometrySaveSettings>();
+            var saveSettings = runner.GetRequiredService<GeometrySaveSettings>();
             saveSettings.IsUserInitialized = true;
 
-            var toolCommandFactory = kitbashScope.GetRequiredService<IUiCommandFactory>();
+            var toolCommandFactory = runner.GetRequiredService<IUiCommandFactory>();
             toolCommandFactory.Create<SaveCommand>().Execute();
 
             // Verify output files
@@ -80,15 +80,12 @@ namespace E2EVerification
             var originalRmv2File = runner.PackFileService.FindFile(_rmvFilePathKarl);
             runner.CommandFactory.Create<OpenEditorCommand>().Execute(originalRmv2File);
 
-            // Get the scope of the newly created kitbash editor
-            var kitbashScope = runner.ScopeRepository.Scopes.First().Value.ServiceProvider;
-
             // Edit the save settings and trigger a save
-            var saveSettings = kitbashScope.GetRequiredService<GeometrySaveSettings>();
+            var saveSettings = runner.GetRequiredService<GeometrySaveSettings>();
             saveSettings.IsUserInitialized = true;
             saveSettings.LodGenerationMethod = LodStrategy.Lod0ForAll;
 
-            var toolCommandFactory = kitbashScope.GetRequiredService<IUiCommandFactory>();
+            var toolCommandFactory = runner.GetRequiredService<IUiCommandFactory>();
             toolCommandFactory.Create<SaveCommand>().Execute();
 
             // Verify output files
@@ -123,21 +120,18 @@ namespace E2EVerification
         public void Rome2_LoadAndSaveDirtHelmet()
         {
             var runner = new AssetEditorTestRunner(GameTypeEnum.Rome_2);
-            var outputPackFile = runner.LoadFolderPackFile(PathHelper.GetDataFolder("Rome_Man_And_Shield_Pack"), true);
+            var outputPackFile = runner.LoadFolderPackFile(PathHelper.GetDataFolder("Data\\Rome_Man_And_Shield_Pack"), true);
 
             // Load the a rmv2 and open the kitbash editor
             var meshPath = "variantmeshes/_variantmodels/man/helmets/carthaginian_pylos.rigid_model_v2";
             var originalRmv2File = runner.PackFileService.FindFile(meshPath);
             runner.CommandFactory.Create<OpenEditorCommand>().Execute(originalRmv2File);
 
-            // Get the scope of the newly created kitbash editor
-            var kitbashScope = runner.ScopeRepository.Scopes.First().Value.ServiceProvider;
-
             // Edit the save settings and trigger a save
-            var saveSettings = kitbashScope.GetRequiredService<GeometrySaveSettings>();
+            var saveSettings = runner.GetRequiredService<GeometrySaveSettings>();
             saveSettings.IsUserInitialized = true;
 
-            var toolCommandFactory = kitbashScope.GetRequiredService<IUiCommandFactory>();
+            var toolCommandFactory = runner.GetRequiredService<IUiCommandFactory>();
             toolCommandFactory.Create<SaveCommand>().Execute();
 
             // Verify output files
@@ -157,21 +151,18 @@ namespace E2EVerification
         public void Rome2_LoadAndSaveDirtAndDecalShield()
         {
             var runner = new AssetEditorTestRunner(GameTypeEnum.Rome_2);
-            var outputPackFile = runner.LoadFolderPackFile(PathHelper.GetDataFolder(("Rome_Man_And_Shield_Pack")));
+            var outputPackFile = runner.LoadFolderPackFile(PathHelper.GetDataFolder(("Data\\Rome_Man_And_Shield_Pack")));
 
             // Load the a rmv2 and open the kitbash editor
             var meshPath = "variantmeshes/_variantmodels/man/shield/celtic_oval_shield_a.rigid_model_v2";
             var originalRmv2File = runner.PackFileService.FindFile(meshPath);
             runner.CommandFactory.Create<OpenEditorCommand>().Execute(originalRmv2File);
 
-            // Get the scope of the newly created kitbash editor
-            var kitbashScope = runner.ScopeRepository.Scopes.First().Value.ServiceProvider;
-
             // Edit the save settings and trigger a save
-            var saveSettings = kitbashScope.GetRequiredService<GeometrySaveSettings>();
+            var saveSettings = runner.GetRequiredService<GeometrySaveSettings>();
             saveSettings.IsUserInitialized = true;
 
-            var toolCommandFactory = kitbashScope.GetRequiredService<IUiCommandFactory>();
+            var toolCommandFactory = runner.GetRequiredService<IUiCommandFactory>();
             toolCommandFactory.Create<SaveCommand>().Execute();
 
             // Verify output files
