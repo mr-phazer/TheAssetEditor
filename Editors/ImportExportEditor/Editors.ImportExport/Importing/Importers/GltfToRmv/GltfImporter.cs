@@ -14,6 +14,7 @@ using Shared.GameFormats.Animation;
 using Shared.Core.ErrorHandling;
 using CommonControls.BaseDialogs.ErrorListDialog;
 using SharpGLTF.Materials;
+using Editors.ImportExport.Misc;
 
 namespace Editors.ImportExport.Importing.Importers.GltfToRmv
 {
@@ -46,7 +47,7 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
             }
 
             var importedFileName = GetImportedPackFileName(settings);
-            
+
             var skeletonName = FetchSkeletonIdStringFromScene(modelRoot);
             if (skeletonName == null)
                 throw new ArgumentNullException(nameof(skeletonName), "Fatal eroro: This shouldn't be null");
@@ -55,12 +56,12 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
             if (skeletonName.Any())
             {
                 skeletonAnimFile = _skeletonLookUpHelper.GetSkeletonFileFromName(skeletonName);
-                                
+
                 if (skeletonAnimFile == null)
                 {
-                    var errorList = new ErrorList();                 
-                    errorList.Error("Skeleton Not Found", $"Skeleton named '{skeletonName}' could not be found\nHave you selected the correct game AND loaded all CA Pack Files?");                   
-                    
+                    var errorList = new ErrorList();
+                    errorList.Error("Skeleton Not Found", $"Skeleton named '{skeletonName}' could not be found\nHave you selected the correct game AND loaded all CA Pack Files?");
+
                     ErrorListWindow.ShowDialog("Skeleton Error", errorList);
 
                     return;
@@ -76,8 +77,17 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
             var bytesRmv2 = ModelFactory.Create().Save(rmv2File);
             var packFileImported = new PackFile(importedFileName, new MemorySource(bytesRmv2));
             var newFile = new NewPackFileEntry(settings.DestinationPackPath, packFileImported);
-            _packFileService.AddFilesToPack(settings.DestinationPackFileContainer, [newFile]);            
+            _packFileService.AddFilesToPack(settings.DestinationPackFileContainer, [newFile]);
         }
+
+        internal ImportSupportEnum CanImportFile(PackFile file)
+        {
+            if (FileExtensionHelper.IsGltfGile(file.Name))
+                return ImportSupportEnum.HighPriority;
+            
+            return ImportSupportEnum.NotSupported;
+        }
+
 
         private static string GetImportedPackFileName(GltfImporterSettings settings)
         {

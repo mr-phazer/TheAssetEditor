@@ -81,24 +81,13 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv.Helper
 
         private void BuildRmvModelMaterial(GltfImporterSettings settings, SharpGLTF.Schema2.Mesh mesh, RmvModel rmvModel)
         {
-            if (mesh == null)
-                throw new ArgumentNullException(nameof(mesh), "Invalid Mesh: Mesh can't be null");
-
-            if (mesh.Primitives == null || !mesh.Primitives.Any())
-                throw new Exception($"Invalid Mesh: No Primitives found in mesh. Primitives.Count = {mesh.Primitives?.Count}");
+            ValidateInput_Mesh_Prim_Mat(mesh);
 
             var primitive = mesh.Primitives.First();
-
-            if (primitive == null)
-                throw new Exception("Invalid Mesh: primitive[0] can't be null ");
-
             var gltfMaterial = primitive.Material;
 
-            if (gltfMaterial == null)
-                throw new Exception("Invalid Mesh: gltfMaterial can't be null ");
-
             foreach (var itText in gltfMaterial.Channels)
-            {                
+            {
                 if (itText.Texture == null) continue;
 
                 var texPath = itText.Texture.PrimaryImage.Content.SourcePath;
@@ -106,8 +95,9 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv.Helper
                     itText.Key,
                     out var textureType,
                     out var postFixString)) continue; // gltf string id doesn't match any of the rmv texture types
-                
-                var gameType = GameTypeEnum.Warhammer3; // TODO: get this from application settings                              
+                                               
+
+                var gameType = GameTypeEnum.Warhammer3;
 
                 // set file name
                 var textureNameBase = mesh.Name.Any() ? mesh.Name : Path.GetFileNameWithoutExtension(settings.InputGltfFile);
@@ -124,11 +114,31 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv.Helper
 
                 // make sure we don't add the same file more the once
                 if (_packFileService.FindFile(textureFullPackPath.ToLower()) != null)
-                    return;                
+                    return;
 
                 var newFile = new NewPackFileEntry(texturePackFolder, ddsPackFile);
-                _packFileService.AddFilesToPack(settings.DestinationPackFileContainer, [newFile]);               
+                _packFileService.AddFilesToPack(settings.DestinationPackFileContainer, [newFile]);
             }
+        }
+
+        private static void ValidateInput_Mesh_Prim_Mat(Mesh mesh)
+        {
+            if (mesh == null)
+                throw new ArgumentNullException(nameof(mesh), "Invalid Mesh: Mesh can't be null");
+
+            if (mesh.Primitives == null || !mesh.Primitives.Any())
+                throw new Exception($"Invalid Mesh: No Primitives found in mesh. Primitives.Count = {mesh.Primitives?.Count}");
+
+            var primitive = mesh.Primitives.First();
+
+            if (primitive == null)
+                throw new Exception("Invalid Mesh: primitive[0] can't be null ");
+
+            var gltfMaterial = primitive.Material;
+
+            if (gltfMaterial == null)
+                throw new Exception("Invalid Mesh: gltfMaterial can't be null ");
+            
         }
 
         private void AddTexture(GltfImporterSettings settings, RmvModel rmvModel, TextureType textureType, PackFile ddsPackFile)

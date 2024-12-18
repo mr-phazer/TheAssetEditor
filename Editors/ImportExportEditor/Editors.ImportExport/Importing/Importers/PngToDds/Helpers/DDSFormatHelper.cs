@@ -68,9 +68,7 @@ namespace Editors.ImportExport.Importing.Importers.PngToDds.Helpers
 
             // TODO: LOG No format found for gameType and textureType
 
-            return DXGI_FORMAT.BC3_UNORM;
+            return DXGI_FORMAT.BC3_UNORM;                        
         }
-
     }
 }
-
