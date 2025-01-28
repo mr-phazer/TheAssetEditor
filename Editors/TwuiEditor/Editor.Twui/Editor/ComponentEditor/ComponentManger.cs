@@ -1,41 +1,53 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Editors.Twui.Editor.Events;
+using CommunityToolkit.Mvvm.Input;
 using Shared.Core.Events;
-using Shared.GameFormats.Twui.Data;
 
 namespace Editors.Twui.Editor.ComponentEditor
 {
     public partial class ComponentManger : ObservableObject
     {
         private readonly IEventHub _eventHub;
-        TwuiFile? _currentFile;
+        TwuiContext? _currentFile;
 
-        [ObservableProperty]public partial HierarchyItem? SelectedHierarchyItem { get; set; }
-        [ObservableProperty]public partial Component? SelectedComponent { get; set; }
+        [ObservableProperty] public partial TwuiComponent? SelectedComponent { get; set; }
+        [ObservableProperty] public partial ComponentViewModel? SelectedComponentViewModel { get; set; }
+        
 
         public ComponentManger(IEventHub eventHub)
-        {
+        { 
             _eventHub = eventHub;
         }
 
-        partial void OnSelectedHierarchyItemChanged(HierarchyItem? value)
+        public void SetFile(TwuiContext file)
         {
-            if (value == null)
-            {
-                SelectedComponent = null;
-                return;
-            }
-
-            var component = _currentFile.Components.FirstOrDefault(x => x.This == value.Id);    // Build a veiw model here! 
-            SelectedComponent = component;
-
-            _eventHub.Publish(new RedrawTwuiEvent(_currentFile, SelectedComponent));
-        }
-
-        public void SetFile(TwuiFile file)
-        { 
             _currentFile = file;
         }
 
+        [RelayCommand]
+        private void ToggleSelected()
+        {
+            if (SelectedComponent == null)
+                return;
+            
+            Toogle(SelectedComponent, !SelectedComponent.ShowInPreviewRenderer);
+        }
+
+        void Toogle(TwuiComponent component, bool value)
+        {
+            component.ShowInPreviewRenderer = value;
+            foreach(var item in component.Children)
+                Toogle(item, value);
+        }
+
+
+        partial void OnSelectedComponentChanged(TwuiComponent? oldValue, TwuiComponent? newValue)
+        {
+            if(oldValue != null)
+                oldValue.IsSelected = false;
+            if(newValue != null)
+                newValue.IsSelected = true;
+
+        }
+        
     }
 }

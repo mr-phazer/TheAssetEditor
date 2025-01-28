@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Shared.GameFormats.Twui.Data;
+using Shared.GameFormats.Twui.Data.DataTypes;
 
 namespace Shared.GameFormats.Twui
 {
@@ -28,9 +29,9 @@ namespace Shared.GameFormats.Twui
             output.Id = AssignAttribute(output.Id, componentNode);
             output.PartOfTemplate = AssignAttribute(output.PartOfTemplate, componentNode);
             output.Uniqueguid_in_template = AssignAttribute(output.Uniqueguid_in_template, componentNode);
+            output.Template_id = AssignAttribute(output.Template_id, componentNode);
             output.Uniqueguid = AssignAttribute(output.Uniqueguid, componentNode);
             output.Dimensions = AssignAttribute(output.Dimensions, componentNode);
-            output.Dock_point = AssignAttribute(output.Dock_point, componentNode);
             output.Tooltips_localised = AssignAttribute(output.Tooltips_localised, componentNode);
             output.Offset = AssignAttribute(output.Offset, componentNode);
             output.Priority = AssignAttribute(output.Priority, componentNode);
@@ -40,9 +41,23 @@ namespace Shared.GameFormats.Twui
             output.Currentstate = AssignAttribute(output.Currentstate, componentNode);
             output.Allowhorizontalresize = AssignAttribute(output.Allowhorizontalresize, componentNode);
             output.Allowverticalresize = AssignAttribute(output.Allowverticalresize, componentNode);
+
+            DockingParser.ConvertFrom(componentNode, out var horizontal, out var vertical);
+            output.DockingVertical = vertical;
+            output.DockingHorizontal = horizontal;
+
+            if (output.Name == "page_cycle")
+            { 
+            
+            }
+
+
+            // States
             var states = componentNode.Element("states");
             output.States = SerializeComponentState(states);
 
+
+            // Component images
             var componentImageNodes = componentNode.Element("componentimages");
             output.ComponentImages = SerializeComponentImage(componentImageNodes);
 
@@ -111,6 +126,22 @@ namespace Shared.GameFormats.Twui
                 stateImage.Height = AssignAttribute(stateImage.Height, xmlStateImage);
                 stateImage.Colour = AssignAttribute(stateImage.Colour, xmlStateImage);
 
+
+                DockingParser.ConvertFrom(xmlStateImage, out var horizontal, out var vertical);
+                stateImage.DockingVertical = vertical;
+                stateImage.DockingHorizontal = horizontal;
+
+                stateImage.Offset = AssignAttribute(stateImage.Offset, xmlStateImage);
+                stateImage.Dock_offset = AssignAttribute(stateImage.Dock_offset, xmlStateImage);
+                stateImage.Margin = AssignAttribute(stateImage.Margin, xmlStateImage);
+
+
+                if (stateImage.This == "0AEA8085-AA18-4BA8-B1A2045FAA47A0E8")
+                {
+                    //stateImage.Dock_offset = new Microsoft.Xna.Framework.Vector2(0, 0);
+                }
+
+
                 output.Add(stateImage);
             }
 
@@ -120,3 +151,11 @@ namespace Shared.GameFormats.Twui
 }
 
 
+
+//	offset="-230.00,-15.00"
+//width="778"
+//height="69"
+//tile="true"
+//dockpoint="Center"
+//dock_offset="0.00,1.00"
+//margin="0.00,230.00,0.00,230.00"/>

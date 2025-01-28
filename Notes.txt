@@ -1,30 +1,43 @@
-Finished for v059
-	[Feature] GameDb => SQL DB convrter v0.1
+
+
+
+
+
+Fixes for v060
+
+
+	[Bugfix]: General: Close console window (and any other windows) on application close 
 	
-	[Bugfix] Audiostuff: Ask pear for a description
-	[Bugfix] General: Fixed bug which caused deleted files to not be removed 
-	[Bugfix] Kitbash: Error message if there is an error in wsmodel, reverts to using rmv2 material
-	[Bugfix] Kitbash: Fixed potential softlock when loading wsmodels with errors 
-	[Bugfix] AnimationBins: Most warnings turned into errors, as CA has terrible QA.
 	
-	X GameWorld: Complex scene loader, make it work without needed Animation players, and graphics card. For unit testing. Make a input setting struct 
-	X General: Convert GameinformationFactory to a static! 
-Fixes for v059
+	[Internal] Changed animationMetadDataParser to be a singlenton with lazy init - To speed up loading and testing when the class is not needed
+
+
+
+
+	[Feature] twui editor v0.1
+	FIX GameDb => SQL DB convrter v0.1
+
 	Finish game settings and make stuff hide behind interface. 
 		Consider movving all of material stuff out of rendering, as it would then make more sene to move wsmodel parsing and generations in there 
-	Twui editor v0
-
-
+		Hide basic shader behind material factory as well. It can also be a capability shader. 
+		
 	X General: Enums for wsmodel format and shaders, formats ++ in GameinformationFactory
 	
 	
-	Create ogre test 
+	Create ogre test
+	AnimBin test
+	WsModel saving test, not all wisible
+	Speed up system tests 
+	
 	Damping and root node handling 
 	"How to use" window - point to github?
 	Rendering window - disbale backface culling 
 	Superview - default scene content to be expanded. Allow select meshes
 	Move Editors.Shared.Core into shared? Maybe under UI?
 
+	ErrorFiles
+		Command history
+		Dump to file 
 	Change how metadata parsing is handled. need to be lazy! Slow slow
 	KitbashTOol Materiul - warning for not supported material! 
 
@@ -56,7 +69,11 @@ Bugs:
 			Save
 			Add 
 			Search 
-	
+			
+Important tests:
+	WsModel for only visible nodes 
+	AnimationBin saving/parsing 
+
 	
 Improvements:
 	General: Print scope - special handling for eventhub. Include registred callbacks 
@@ -119,7 +136,24 @@ New features:
 	Tool for editing prefabs
 	
 	
-Fixes for v057:
+Interesting links:
+	https://github.com/kikipoulet/SukiUI/blob/main/SukiUI/Controls/PropertyGrid/InstanceViewModel.cs	-> Auto generate views for property gird. Also good docking in same lib 
+	
+	
+	
+Finished for v058
+	[Feature] Support for reading encrypted packfiles
+	
+	[Bugfix] Kitbash: Fixed issue when generating WsModel for only visible meshes 
+	[Bugfix] General: Fixed common crash when opening 3d models, that caused soft lock. Thanks to Cemmen and timbabwiani for debugging help
+	[Bugfix] Audio: General bugfixes and Improvements  
+	[Bugfix] General: Fixed bug which caused deleted files to not be removed 
+	[Bugfix] Kitbash: Error message if there is an error in wsmodel, reverts to using rmv2 material
+	[Bugfix] Kitbash: Fixed potential softlock when loading wsmodels with errors 
+	[Bugfix] AnimationBins: Most warnings turned into errors, as CA has terrible QA.
+	[Bugfix] AnimationBins: Fixed crash when validating bin, due to missing file. Is now a warrning #243
+	
+Fixes for v058:
 	[Feature]	General:	Force close current editor option added to the error window to avoid softlocks. https://github.com/donkeyProgramming/TheAssetEditor/issues/232
 	[Feature]	AnimationReTarget: The tool is enabled again - probably pretty buggy in its first iterations. Improvements will come. 
 	[Feature] 	General: 	Added 'Save Active pack' button to file menu https://github.com/donkeyProgramming/TheAssetEditor/issues/123
@@ -139,7 +173,7 @@ Fixes for v057:
 	[Bug] KitbashEditor:	Fixed wsmodel generation for pharaoh. Thanks to Ewajos
 	
 	
-Fixes for v056:
+Fixes for v057:
 	[Bug] General: Double clicking a packfile node did not expand it correctly
 	[Bug] General: "Make editable pack" option missing from context menu
 	[Bug] General: Fix crash when resize window to very small
@@ -149,7 +183,7 @@ Fixes for v056:
 	[Bug] KitbashEditor: Fixed event issue related to selection in SceneNodeExplorer
 
 
-Fixes for v055:
+Fixes for v056:
 	[Feature]General: Pin tool is improved and now has the SkinWrap rigging enabled again.
 
 	[Bug] General: Fixed rendering crash with all empty scene
