@@ -58,9 +58,10 @@ namespace Shared.Ui.BaseDialogs.PackFileTree.ContextMenu
         void CreateForDirectory(ContextMenuItem2 rootNode, TreeNode selectedNode)
         {
             var isCaPack = selectedNode.FileOwner.IsCaPackFile;
+            var isRoot = selectedNode.GetNodeType() == NodeType.Root;
             var isCurrentEditable = _packFileService.GetEditablePack() == selectedNode.FileOwner;
 
-            if (selectedNode.GetNodeType() == NodeType.Root)
+            if (isRoot)
             {
                 // Close
                 Add<ClosePackContainerFileCommand>(selectedNode, rootNode);
@@ -87,7 +88,9 @@ namespace Shared.Ui.BaseDialogs.PackFileTree.ContextMenu
                 var importFolder = AddChildMenu("Import", rootNode);
                 Add<ImportFileCommand>(selectedNode, importFolder);
                 Add<ImportDirectoryCommand>(selectedNode, importFolder);
-                Add<AdvancedImportCommand>(selectedNode, importFolder);
+
+                if (!isRoot)
+                    Add<AdvancedImportCommand>(selectedNode, importFolder);                
 
                 var createMenu = AddChildMenu("Create", rootNode);
                 Add<CreateFolderCommand>(selectedNode, createMenu);
