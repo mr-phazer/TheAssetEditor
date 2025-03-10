@@ -1,4 +1,6 @@
-﻿using Shared.Core.PackFiles.Models;
+﻿using CsvHelper.Expressions;
+using Shared.Core.PackFiles.Models;
+using Shared.Core.Settings;
 
 namespace Editors.ImportExport.Importing.Importers.GltfToRmv
 {
@@ -6,7 +8,10 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
     (
         string InputGltfFile,
         string DestinationPackPath,
+        GameTypeEnum SelectedGame,
         PackFileContainer DestinationPackFileContainer,
+        bool ImportMeshes, 
+        bool ImportMaterials, 
         bool ConvertNormalTextureToOrangeType,
         bool ImportAnimations,
         bool MirrorMesh

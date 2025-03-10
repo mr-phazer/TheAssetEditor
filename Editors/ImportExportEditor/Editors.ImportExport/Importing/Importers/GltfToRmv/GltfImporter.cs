@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CommonControls.BaseDialogs.ErrorListDialog;
 using Editors.ImportExport.Importing.Importers.GltfToRmv.Helper;
+using Editors.ImportExport.Misc;
 using Editors.Shared.Core.Services;
 using Shared.Core.ErrorHandling;
 using Shared.Core.PackFiles;
@@ -24,6 +25,15 @@ namespace Editors.ImportExport.Importing.Importers.GltfToRmv
             _packFileService = packFileSerivce;
             _exceptionService = exceptionService;
             _skeletonLookUpHelper = skeletonLookUpHelper;
+        }
+
+
+        public ImportSupportEnum CanImportFile(PackFile file)
+        {
+            if (FileExtensionHelper.IsGltfFile(file.Name))
+                return ImportSupportEnum.HighPriority;
+            
+            return ImportSupportEnum.NotSupported;
         }
 
         public void Import(GltfImporterSettings settings)

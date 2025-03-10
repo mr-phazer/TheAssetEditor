@@ -9,6 +9,7 @@ using Shared.Core.Settings;
 using Shared.Ui.Common.DataTemplates;
 using Editors.ImportExport.Importing.Presentation.RmvToGltf;
 using Editors.ImportExport.Common;
+using Editors.ImportExport.Misc;
 
 namespace Editors.ImportImport.Importing.Presentation.RmvToGltf
 {
@@ -32,23 +33,21 @@ namespace Editors.ImportImport.Importing.Presentation.RmvToGltf
             _Importer = Importer;
         }
 
-        public ImportExportSupportEnum CanImportFile(PackFile file) => _Importer.CanImportFile(file);
+        public ImportSupportEnum CanImportFile(PackFile file) => _Importer.CanImportFile(file);
 
         public void Execute(PackFile importSource, string outputPath, PackFileContainer packFileContainer, GameTypeEnum gameType)
         {
             var settings = new GltfImporterSettings(
                 InputGltfFile: importSource.Name,
                 DestinationPackPath: outputPath,
-                DestinationPackFileContainer: packFileContainer,
                 SelectedGame: gameType,
+                DestinationPackFileContainer: packFileContainer,
                 ImportMeshes: this.ImportMeshes,
                 ImportMaterials: this.ImportMaterials,
-                ConvertMaterialFromBlenderType: this.ConvertFromBlenderMaterialMap,
-                ConvertNormalTextureFromBlueToOrangeType: this.ConvertNormalTextureToOrange,
-                ImportAnimations: this.ImportAnimations,
-                AnimationKeysPerSecond: this.AnimationKeysPerSecond,
-                MirrorMesh: true);
-
+                ConvertNormalTextureToOrangeType: this.ConvertNormalTextureToOrange,
+                ImportAnimations: this.ImportAnimations,            
+                MirrorMesh: true); 
+                        
             _Importer.Import(settings);
         }
     }

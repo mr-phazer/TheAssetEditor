@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using Editors.ImportExport.Importing.Importers.GltfToRmv;
 using Shared.Core.Events;
+using Shared.Core.Settings;
 using TreeNode = Shared.Ui.BaseDialogs.PackFileTree.TreeNode;
 
 namespace Editors.ImportExport.Importing
@@ -9,15 +10,18 @@ namespace Editors.ImportExport.Importing
     {   
         // TODO: ?
    
-        private readonly GltfImporter _importer;     
+        private readonly GltfImporter _importer;
+        private readonly ApplicationSettingsService _settingsService;
 
-
-        public DisplayImportFileToolCommand(GltfImporter importer)
+        public DisplayImportFileToolCommand(GltfImporter importer, ApplicationSettingsService settingsService)
+ 
         {            
             // TODO: ?
             //_ImportWindowFactory = importWindowFactory;
             _importer = importer;
+            _settingsService = settingsService;
         }
+
 
         public void Execute(TreeNode clickedNode)
         {
@@ -25,7 +29,10 @@ namespace Editors.ImportExport.Importing
             if (string.IsNullOrEmpty(glftFilePath))
                 return;
 
-            var settings = new GltfImporterSettings(glftFilePath, clickedNode.GetFullPath(), clickedNode.FileOwner, true, true, true);
+
+            var selectGaame = _settingsService.CurrentSettings.CurrentGame;
+
+            var settings = new GltfImporterSettings(glftFilePath, clickedNode.GetFullPath(), selectGaame, clickedNode.FileOwner, true, true, true, true, true);
             _importer.Import(settings);
         }
 
