@@ -9,6 +9,11 @@ namespace Editors.ImportExport.Misc
             return isDdsFile;
         }
 
+        public static bool IsGltfFile(string fileName)
+        {
+           return fileName.EndsWith(".gltf", StringComparison.InvariantCultureIgnoreCase);
+        }
+
         public static bool IsDdsMaterialFile(string fileName)
         {
             var isDdsFile = IsDdsFile(fileName);

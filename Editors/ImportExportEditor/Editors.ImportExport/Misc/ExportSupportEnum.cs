@@ -6,4 +6,11 @@
         NotSupported,
         HighPriority
     }
+
+    public enum ImportSupportEnum
+    {
+        Supported,
+        NotSupported,
+        HighPriority
+    }
 }
