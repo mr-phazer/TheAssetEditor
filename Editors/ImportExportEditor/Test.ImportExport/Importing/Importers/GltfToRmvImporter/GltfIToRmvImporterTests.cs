@@ -72,9 +72,9 @@ namespace Test.ImportExport.Importing.Importers.GltfImporterTest
             var importer = new GltfImporter(pfs, standardDialog.Object, skeletontonLookupHelper);
 
             var packFileContainer = new PackFileContainer("new");
-            var settings = new GltfImporterSettings(TestData.InputGtlfFile, "skeletons", packFileContainer, true, true, true);
+            var settings = new GltfImporterSettings(TestData.InputGtlfFile, "skeletons", Shared.Core.Settings.GameTypeEnum.Warhammer3, packFileContainer, true, true, true, true, true);
 
-            // Act
+            // Act98
             // Do full import
             importer.Import(settings);
             var rmv2FileName = @$"skeletons\{Path.GetFileNameWithoutExtension(TestData.InputGtlfFile)}.rigid_model_v2".ToLower();
@@ -108,7 +108,7 @@ namespace Test.ImportExport.Importing.Importers.GltfImporterTest
             var sceneLoader = new GltfSceneLoader(standardDialog.Object);
             var skeletonFile = skeletontonLookupHelper.GetSkeletonFileFromName(TestData.Rmv2Expected.skeletonName);
             var packFileContainer = new PackFileContainer("new");
-            var settings = new GltfImporterSettings(TestData.InputGtlfFile, "skeletons", packFileContainer, true, true, true);
+            var settings = new GltfImporterSettings(TestData.InputGtlfFile, "skeletons", Shared.Core.Settings.GameTypeEnum.Warhammer3, packFileContainer, true, true, true, true, true);
 
             // Act....          
             var modelRoot = sceneLoader.Load(settings);
